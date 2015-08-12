@@ -1,0 +1,515 @@
+//
+//  PrivateGroup2ViewController.m
+//  GroupsNearMe
+//
+//  Created by Jannath Begum on 5/18/15.
+//  Copyright (c) 2015 Vishwak. All rights reserved.
+//
+
+#import "PrivateGroup2ViewController.h"
+#import "GroupModalClass.h"
+#import "SVProgressHUD.h"
+#import "Toast+UIView.h"
+#import "InsideGroupViewController.h"
+#define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+
+@interface PrivateGroup2ViewController ()
+@property (nonatomic, strong) MKCircle *circleOverlay;
+
+@end
+
+@implementation PrivateGroup2ViewController
+@synthesize userHeadingBtn;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    sharedObj=[Generic sharedMySingleton];
+     create=NO;
+    currentdate=[[NSString alloc]init];
+    timestamp=[[NSString alloc]init];
+    humanizedType = NSDateHumanizedSuffixAgo;
+
+
+    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
+       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
+    groupId=[[NSString alloc]init];
+    groupimgurl=[[PFFile alloc]init];
+    mygroup=[[NSMutableArray alloc]init];
+    
+    PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
+    [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
+    [query1 fromLocalDatastore];
+    [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
+    [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+        if (error) {
+        }
+        else{
+            userimage =[object objectForKey:@"ThumbnailPicture"];
+        }}];
+    _locationManager = [[CLLocationManager alloc] init];
+    
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    _locationManager.distanceFilter = kCLLocationAccuracyNearestTenMeters;
+    if(IS_OS_8_OR_LATER) {
+        [_locationManager requestWhenInUseAuthorization];
+       // [_locationManager requestAlwaysAuthorization];
+    }
+    [_locationManager startUpdatingLocation];
+    
+    [self.mapview setDelegate:self];
+    [self.mapview setShowsUserLocation:YES];
+    
+    UIImage *buttonImage = [UIImage imageNamed:@"greyButtonHighlight.png"];
+    UIImage *buttonImageHighlight = [UIImage imageNamed:@"greyButton.png"];
+    UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+    
+    //Configure the button
+    userHeadingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [userHeadingBtn addTarget:self action:@selector(startShowingUserHeading:) forControlEvents:UIControlEventTouchUpInside];
+    //Add state images
+    [userHeadingBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [userHeadingBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [userHeadingBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
+    [userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    
+    //Position and Shadow
+    
+    //userHeadingBtn.frame = CGRectMake(5,screenBounds.size.height-145,39,30);
+    userHeadingBtn.frame = CGRectMake(5,10,39,30);
+    userHeadingBtn.layer.cornerRadius = 8.0f;
+    userHeadingBtn.layer.masksToBounds = NO;
+    userHeadingBtn.layer.shadowColor = [UIColor blackColor].CGColor;
+    userHeadingBtn.layer.shadowOpacity = 0.8;
+    userHeadingBtn.layer.shadowRadius = 1;
+    userHeadingBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
+    
+    [self.mapview addSubview:userHeadingBtn];
+    
+  
+    self.radiusSlider.value=sharedObj.radiusVisibilityVal;
+    UITapGestureRecognizer *gr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(sliderTapped:)];
+    gr.numberOfTapsRequired=1;
+    [self.radiusSlider addGestureRecognizer:gr];
+     _visibilitylabel.text=[NSString stringWithFormat:@"%d",sharedObj.radiusVisibilityVal];
+    radiusVisibilty=sharedObj.radiusVisibilityVal;
+//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
+//    radiusVisibilty =(int)self.radiusSlider.value;
+//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d", radiusVisibilty ]] forState:_radiusSlider.state];
+      [self showUserLocation];
+ 
+  
+    
+
+    // Do any additional setup after loading the view.
+}
+- (IBAction) startShowingUserHeading:(id)sender{
+    
+    if(self.mapview.userTrackingMode == 0){
+        [self.mapview setUserTrackingMode: MKUserTrackingModeFollow animated: YES];
+        
+        //Turn on the position arrow
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationBlue.png"];
+        [userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+        
+    }
+    else if(self.mapview.userTrackingMode == 1){
+        [self.mapview setUserTrackingMode: MKUserTrackingModeFollowWithHeading animated: YES];
+        
+        //Change it to heading angle
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationHeadingBlue"];
+        [userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+    else if(self.mapview.userTrackingMode == 2){
+        [self.mapview setUserTrackingMode: MKUserTrackingModeNone animated: YES];
+        
+        //Put it back again
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+        [userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+    
+    
+}
+- (void) showUserLocation {
+    
+    [self.mapview setUserTrackingMode: MKUserTrackingModeFollow animated: YES];
+    
+    dropPin = [[Annotation alloc] initWithTitle:@"" location:self.mapview.userLocation.coordinate];
+ 
+
+    [self.mapview addAnnotation:dropPin];
+    
+      tapCount = 0;
+     _mapview.zoomEnabled=YES;
+    [self fitthemap:radiusVisibilty];
+    
+}
+//---------------------------------------------------------------
+
+- (void)addBounceAnnimationToView:(UIView *)view {
+    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    
+    bounceAnimation.values = @[@(0.05), @(1.1), @(0.9), @(1)];
+    
+    bounceAnimation.duration = 0.6;
+    NSMutableArray *timingFunctions = [[NSMutableArray alloc] initWithCapacity:bounceAnimation.values.count];
+    for (NSUInteger i = 0; i < bounceAnimation.values.count; i++) {
+        [timingFunctions addObject:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    }
+    [bounceAnimation setTimingFunctions:timingFunctions.copy];
+    bounceAnimation.removedOnCompletion = NO;
+    
+    [view.layer addAnimation:bounceAnimation forKey:@"bounce"];
+}
+
+//---------------------------------------------------------------
+
+#pragma mark
+#pragma mark MKMapView delegate methods
+
+//---------------------------------------------------------------
+
+- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views {
+    for (UIView *view in views) {
+        [self addBounceAnnimationToView:view];
+    }
+}
+
+//---------------------------------------------------------------
+
+- (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    
+    if ([annotation isKindOfClass:[MKUserLocation class]])
+        return nil;
+    if ([annotation isKindOfClass:[Annotation class]]) {
+        Annotation *customAnnotation = (Annotation *) annotation;
+        
+        MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"CustomAnnotation"];
+        
+        if (annotationView == nil)
+            annotationView = customAnnotation.annotationView;
+        else
+            annotationView.annotation = annotation;
+        [self addBounceAnnimationToView:annotationView];
+          annotationView.image=[UIImage imageNamed:@""];
+        return annotationView;
+    } else
+        return nil;
+}
+
+//---------------------------------------------------------------
+
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
+    NSLog(@"Region will changed...");
+    [self.mapview removeAnnotation:dropPin];
+   // [self.mapview addSubview:self.annotationImage];
+    
+}
+
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
+    NSLog(@"Region did changed...");
+    centre = [mapView centerCoordinate];
+    
+    
+    //[self.annotationImage removeFromSuperview];
+    
+    dropPin.coordinate = centre;
+    [self.mapview addAnnotation:dropPin];
+    [self zoomMapview:radiusVisibilty];
+    
+    
+}
+
+
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
+    if (userLocation.location == nil)
+        return;
+    
+}
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:YES];
+    [self.locationManager stopUpdatingLocation];
+}
+
+
+- (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated{
+    if(self.mapview.userTrackingMode == 0){
+        [self.mapview setUserTrackingMode: MKUserTrackingModeNone animated: YES];
+        
+        //Put it back again
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+        [userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+    
+}
+- (IBAction)back:(id)sender {
+    if (create) {
+        return;
+    }
+    else
+    {
+         create=NO;
+    sharedObj.radiusVisibilityVal=(int)self.radiusSlider.value;
+    [[self navigationController]popViewControllerAnimated:YES];
+    }
+}
+- (IBAction)radiusChange:(id)sender {
+    
+    radiusVisibilty =(int)self.radiusSlider.value;
+    [self fitthemap:radiusVisibilty];
+    
+    _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
+
+}
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"didFailWithError: %@", error);
+    [self.view makeToast:@"Unable to get your location" duration:3.0 position:@"bottom"];
+}
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+{
+    [self.locationManager stopUpdatingLocation];
+    
+}
+
+- (void)sliderTapped:(UIGestureRecognizer *)g
+{
+    /////////////// For TapCount////////////
+    
+    tapCount = tapCount + 1;
+    NSLog(@"Tap Count -- %d",tapCount);
+    
+    /////////////// For TapCount////////////
+    
+    UISlider* s = (UISlider*)g.view;
+    if (s.highlighted)
+        return; // tap on thumb, let slider deal with it
+    CGPoint pt = [g locationInView: s];
+    CGFloat percentage = pt.x / s.bounds.size.width;
+    CGFloat delta = percentage * (s.maximumValue - s.minimumValue);
+    CGFloat value = s.minimumValue + delta;
+    [s setValue:value animated:YES];
+    radiusVisibilty =(int)self.radiusSlider.value;
+    [self fitthemap:radiusVisibilty];
+    
+    
+    
+   _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
+    
+}
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id < MKOverlay >)overlay {
+    if ([overlay isKindOfClass:[MKCircle class]]) {
+        MKCircleRenderer *circleRenderer = [[MKCircleRenderer alloc] initWithCircle:self.circleOverlay];
+        [circleRenderer setFillColor:[[UIColor colorWithRed:3.0/255.0 green:169.0/255.0 blue:244.0/255.0 alpha:1.0] colorWithAlphaComponent:0.2f]];
+        [circleRenderer setStrokeColor:[[UIColor colorWithRed:3.0/255.0 green:169.0/255.0 blue:244.0/255.0 alpha:1.0] colorWithAlphaComponent:1.0f]];
+        [circleRenderer setLineWidth:1.0f];
+        return circleRenderer;
+    }
+    return nil;
+}
+-(void)fitthemap:(int)diameter
+{
+   
+    MKCoordinateRegion region;
+    //Set Zoom level using Span
+    MKCoordinateSpan span;
+    region.center=centre;
+    span.latitudeDelta=0.01;
+    span.longitudeDelta=0.01;
+    region.span=span;
+    [_mapview setRegion:region animated:TRUE];
+    
+    
+    [self zoomMapview:radiusVisibilty];
+    
+}
+-(void)zoomMapview:(int)radius
+{
+    
+    if (self.circleOverlay != nil) {
+        [self.mapview removeOverlay:self.circleOverlay];
+        self.circleOverlay = nil;
+    }
+    self.circleOverlay = [MKCircle circleWithCenterCoordinate:centre radius:radiusVisibilty];
+    [self.mapview addOverlay:self.circleOverlay];
+    
+    ;
+}
+- (IBAction)dragendRadius:(id)sender {
+    radiusVisibilty =(int)self.radiusSlider.value;
+    [self fitthemap:radiusVisibilty];
+    _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
+//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
+//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d",radiusVisibilty ]] forState:_radiusSlider.state];
+}
+- (IBAction)nextbtnClicked:(id)sender
+{
+   
+    if (create) {
+        return;
+    }
+    else
+    {
+        create=YES;
+    }
+    [SVProgressHUD showWithStatus:@"Creating Group...." maskType:SVProgressHUDMaskTypeBlack];
+
+    pointVal = [PFGeoPoint geoPointWithLatitude:centre.latitude longitude:centre.longitude];
+    sharedObj.groupLocation=pointVal;
+    sharedObj.radiusVisibilityVal=radiusVisibilty;
+    PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+    
+            groupimgurl=imageFile;
+            PFObject *testObject = [PFObject objectWithClassName:@"Group"];
+            testObject[@"MobileNo"]=sharedObj.AccountNumber;
+            testObject[@"CountryName"]=sharedObj.AccountCountry;
+            testObject[@"GroupName"]=sharedObj.GroupName;
+            testObject[@"GroupPicture"]=imageFile;
+            testObject[@"GroupDescription"]=sharedObj.groupdescription;
+            testObject[@"GroupType"]=@"Private";
+            testObject[@"GroupLocation"]=pointVal;
+            testObject[@"MemberCount"]=[NSNumber numberWithInt:1];
+            testObject[@"NewsFeedCount"]=[NSNumber numberWithInt:0];
+            testObject[@"MemberInvitation"]=[NSNumber numberWithBool:YES];
+            testObject[@"GreenChannel"]=[[NSMutableArray alloc]init];
+            testObject[@"MembershipApproval"]=[NSNumber numberWithBool:sharedObj.MemberApproval];
+            testObject[@"JobScheduled"]=[NSNumber numberWithBool:NO];
+            testObject[@"JobHours"]=[NSNumber numberWithInt:0];
+            testObject[@"GroupStatus"]=@"Active";
+            testObject[@"GroupMembers"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+             testObject[@"AdminArray"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+            testObject[@"AdditionalInfoRequired"]=[NSNumber numberWithBool:NO];
+            testObject[@"InfoRequired"]=@"";
+            testObject[@"LatestPost"]=@"";
+            
+            testObject[@"VisibiltyRadius"]=[NSNumber numberWithInt:sharedObj.radiusVisibilityVal];
+            testObject[@"SecretStatus"]=[NSNumber numberWithBool:NO];
+            testObject[@"SecretCode"]=@"";
+            [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (!error) {
+                   
+                    timestamp=[[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
+                    PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
+                    member[@"GroupId"]=testObject.objectId;
+                    member[@"MemberNo"]=sharedObj.AccountNumber;
+                    member[@"JoinedDate"]=[NSDate date];
+                    member[@"AdditionalInfoProvided"]=@"";
+                    member[@"ExitGroup"]=[NSNumber numberWithBool:NO];
+                    member[@"LeaveDate"]=[NSDate date];
+                    member[@"GroupAdmin"]=[NSNumber numberWithBool:YES];
+                 member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
+                    member[@"MemberStatus"]=@"Active";
+                    member[@"ExitedBy"]=@"";
+                    member[@"MemberImage"]=userimage;
+                    member[@"MemberName"]=sharedObj.AccountName;
+                    PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
+                    
+                    member[@"UserId"]=pointer;
+                    [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (succeeded) {
+
+                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
+                    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
+                    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
+                    
+                    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
+                        if (error) {
+                            NSLog(@"Data not available insert userdetails");
+                            [SVProgressHUD dismiss];
+                            
+                            
+                        } else {
+                            groupId=testObject.objectId;
+                            mygroup=userStats[@"MyGroupArray"];
+                            [mygroup addObject:testObject.objectId];
+                            userStats[@"MyGroupArray"]=mygroup;
+                            [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
+                            userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                            userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                            [userStats saveInBackground];
+                            
+                            [self CallMyService];
+                        }
+                    }];
+                        }
+                        else
+                        {
+                            [SVProgressHUD dismiss];
+                        }
+                    }];
+                    
+                }
+                else{
+                    // Error
+                    [SVProgressHUD dismiss];
+                    NSLog(@"Error: %@ %@", error, [error userInfo]);
+                    [SVProgressHUD dismiss];
+                }
+            }];
+        
+
+}
+-(void)CallMyService
+{
+    [SVProgressHUD showWithStatus:@"Group Created Successfully...." maskType:SVProgressHUDMaskTypeBlack];
+
+    [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
+    PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
+    [myquery whereKey:@"objectId" containedIn:mygroup];
+    [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
+    [myquery orderByDescending:@"updatedAt"];
+    [myquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            NSLog(@"error in geo query!"); // todo why is this ever happening?
+        } else {
+            
+            [PFObject unpinAllObjectsInBackgroundWithName:@"MYGROUP"];
+            [PFObject pinAllInBackground:objects withName:@"MYGROUP"];
+        }
+    }];
+
+    [SVProgressHUD dismiss];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    InsideGroupViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InsideGroupViewController"];
+                
+    sharedObj.groupType=@"Private";
+    sharedObj.GroupId=groupId;
+    sharedObj.frommygroup=NO;
+    sharedObj.groupimageurl=groupimgurl;
+    sharedObj.groupMember=@"1";
+    sharedObj.secretCode=@"";
+    sharedObj.currentGroupAdminArray=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+    sharedObj.currentGroupmemberArray=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+    sharedObj.groupdescription=sharedObj.aboutGroup;
+    sharedObj.GroupName=sharedObj.GroupName;
+    sharedObj.currentgroupAddinfo=NO;
+    sharedObj.addinfo=@"";
+    sharedObj.currentgroupOpenEntry=0;
+    sharedObj.currentgroupradius=sharedObj.radiusVisibilityVal;
+    sharedObj.currentgroupSecret=NO;
+    sharedObj.currentgroupEstablished=timestamp;
+
+    [self.navigationController pushViewController:settingsViewController animated:YES];
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end
