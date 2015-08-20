@@ -174,7 +174,7 @@
         cell.menuImageview.image=[UIImage imageNamed:[menuimageArray objectAtIndex:indexPath.row]];
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
    
-    
+    cell.menuImageview.alpha=0.7;
     cell.menuImageview.backgroundColor=[UIColor whiteColor];
     return cell;
 }

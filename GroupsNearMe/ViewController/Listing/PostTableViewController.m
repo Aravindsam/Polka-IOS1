@@ -776,7 +776,7 @@
                 {
                     if (result == SLComposeViewControllerResultDone)
                     {
-                        [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                        [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                     }
                     
                 
@@ -808,7 +808,7 @@
              {
                  if (result == SLComposeViewControllerResultDone)
                  {
-                    [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                    [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                  }
                      
                  
@@ -833,7 +833,7 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
 
 }
@@ -858,7 +858,7 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
@@ -894,7 +894,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -916,7 +916,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
 }
 
@@ -955,7 +955,7 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
         }
         else
         {
@@ -999,7 +999,7 @@
                     }
                     else
                     {
-                         [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+                         [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
                     }
 //                     [WhatsAppKit launchWhatsAppWithMessage:[NSString stringWithFormat:@"%@ Via Iphone %@",sharefeed[@"ImageCaption"],[NSURL URLWithString:imageUrl]]];
 //                }
@@ -1015,7 +1015,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {
@@ -1088,7 +1088,7 @@
 - (void)postWasCreated {
     
     [SVProgressHUD dismiss];
-                [self callService];
+                [self loadObjects];
            
   
         
@@ -1120,10 +1120,7 @@
     [query fromLocalDatastore];
     // If no objects are loaded in memory, we look to the cache first to fill the table
     // and then subsequently do a query against the network.
-    if ([self.objects count] == 0) {
-        //query.cachePolicy = kPFCachePolicyCacheThenNetwork;
-        
-    }
+   
     query.limit=100;
     // Query for posts near our current location.
     
@@ -1145,7 +1142,7 @@
         query1.limit=100;
         [query1 whereKey:@"GroupId" equalTo:[Generic sharedMySingleton].GroupId];
         [query1 whereKey:@"PostStatus" equalTo:@"Active"];
-        
+        [query includeKey:@"UserId"];
         if ([[Generic sharedMySingleton].groupType isEqualToString:@"Public"]) {
             [query1 whereKey:@"PostType" notEqualTo:@"Member"];
         }
@@ -1645,20 +1642,18 @@
             int widthimg=[object[@"ImageWidth"] intValue];
             int heightimg=[object[@"ImageHeight"]intValue];
             
-//            if(heightimg>widthimg)
-//            {
+//            float hfactor = widthimg /self.tableView.frame.size.width;
+//            float vfactor = heightimg/ self.tableView.frame.size.height;
+//            
+//            float factor = fmax(hfactor, vfactor);
+//            
+//            // Divide the size by the greater of the vertical or horizontal shrinkage factor
+//            //float newWidth = widthimg / factor;
+//            float newHeight = heightimg / factor;
             
-            float hfactor = widthimg /self.tableView.frame.size.width;
-            float vfactor = heightimg/ self.tableView.frame.size.height;
-            
-            float factor = fmax(hfactor, vfactor);
-            
-            // Divide the size by the greater of the vertical or horizontal shrinkage factor
-            //float newWidth = widthimg / factor;
-            float newHeight = heightimg / factor;
-                int difference=newHeight;
-            
-            if(heightimg>widthimg)
+            double aspectratio=(double)heightimg/widthimg;
+             double difference=aspectratio*(self.tableView.frame.size.width-40);
+            if(aspectratio >1.0)
             {
                 if (animal == NULL || animal.length ==0)
                 {
@@ -1671,7 +1666,7 @@
 
                 }
             }
-            else if(heightimg==widthimg)
+            else if(aspectratio==1)
             {
                 if (animal == NULL || animal.length ==0)
                 {

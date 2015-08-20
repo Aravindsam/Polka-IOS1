@@ -109,16 +109,14 @@
     [_mygroupTableview setFrame:self.view.frame];
     _mygroupTableview.backgroundColor=[UIColor clearColor];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(doSomething) name:@"REFRESH" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateunreadmsg) name:@"REFRESHMYGROUP" object:nil];
+//    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateunreadmsg) name:@"REFRESHMYGROUP" object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTableview) name:@"MYGROUPSEARCH" object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshServiceData) name:@"SERVICEREFRESH" object:nil];
     if (sharedobj.MyGroupArray.count!=0) {
         [_mygroupTableview setHidden:NO];
         [_noresultView setHidden:YES];
         [self.mygroupTableview reloadData];
-        //                    if (update) {
-        //                         [self updateMyGroup];
-        //                    }
+               
         
     }
     else
@@ -129,58 +127,58 @@
 
     // Do any additional setup after loading the view.
 }
--(void)updateMyGroup
-{
-    for (int i=0; i < sharedobj.MyGroupArray.count; i++) {
-        
-        GroupModalClass *modal=[sharedobj.MyGroupArray objectAtIndex:i];
-
-    PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
-    query.limit=100;
-    [query whereKey:@"GroupId" equalTo:modal.groupId];
-    [query whereKey:@"PostStatus" equalTo:@"Active"];
-    
-    if ([modal.groupType isEqualToString:@"Public"]) {
-        [query whereKey:@"PostType" notEqualTo:@"Member"];
-    }
-    
-    // [query includeKey:@"UserName"];
-    [query orderByDescending:@"updatedAt"];
-        [query fromLocalDatastore];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (objects.count==0) {
-            PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
-            query1.limit=100;
-            [query1 whereKey:@"GroupId" equalTo:modal.groupId];
-            [query1 whereKey:@"PostStatus" equalTo:@"Active"];
-            
-            if ([modal.groupType isEqualToString:@"Public"]) {
-                [query whereKey:@"PostType" notEqualTo:@"Member"];
-            }
-            
-            // [query includeKey:@"UserName"];
-            [query1 orderByDescending:@"updatedAt"];
-            [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                [PFObject unpinAllObjectsInBackgroundWithName:modal.groupId];
-                [PFObject pinAllInBackground:objects withName:modal.groupId block:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
-                        NSLog(@"MY GROUP Pinned OK");
-                        
-                        
-                        
-                    }else{
-                        NSLog(@"Erro: %@", error.localizedDescription);
-                    }
-
-                }];
-            
-            }];
-        }
-        
-    }];
-    }
-
-}
+//-(void)updateMyGroup
+//{
+//    for (int i=0; i < sharedobj.MyGroupArray.count; i++) {
+//        
+//        GroupModalClass *modal=[sharedobj.MyGroupArray objectAtIndex:i];
+//
+//    PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+//    query.limit=100;
+//    [query whereKey:@"GroupId" equalTo:modal.groupId];
+//    [query whereKey:@"PostStatus" equalTo:@"Active"];
+//    
+//    if ([modal.groupType isEqualToString:@"Public"]) {
+//        [query whereKey:@"PostType" notEqualTo:@"Member"];
+//    }
+//    
+//    // [query includeKey:@"UserName"];
+//    [query orderByDescending:@"updatedAt"];
+//        [query fromLocalDatastore];
+//    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+//        if (objects.count==0) {
+//            PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
+//            query1.limit=100;
+//            [query1 whereKey:@"GroupId" equalTo:modal.groupId];
+//            [query1 whereKey:@"PostStatus" equalTo:@"Active"];
+//            
+//            if ([modal.groupType isEqualToString:@"Public"]) {
+//                [query whereKey:@"PostType" notEqualTo:@"Member"];
+//            }
+//            
+//            // [query includeKey:@"UserName"];
+//            [query1 orderByDescending:@"updatedAt"];
+//            [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+//                [PFObject unpinAllObjectsInBackgroundWithName:modal.groupId];
+//                [PFObject pinAllInBackground:objects withName:modal.groupId block:^(BOOL succeeded, NSError *error) {
+//                    if (succeeded) {
+//                        NSLog(@"MY GROUP Pinned OK");
+//                        
+//                        
+//                        
+//                    }else{
+//                        NSLog(@"Erro: %@", error.localizedDescription);
+//                    }
+//
+//                }];
+//            
+//            }];
+//        }
+//        
+//    }];
+//    }
+//
+//}
 -(void)switchtab
 {
     [[NSNotificationCenter defaultCenter]postNotificationName:@"MOVETONEARBY" object:nil];
@@ -385,9 +383,7 @@
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
                     [self.mygroupTableview reloadData];
-//                    if (update) {
-//                         [self updateMyGroup];
-//                    }
+
                    
                 }
                 else
@@ -409,9 +405,7 @@
                 [sharedobj.MyGroupArray removeAllObjects];
                 [SVProgressHUD dismiss];
                 if (sharedobj.MyGroupArray.count!=0) {
-//                    if (update) {
-//                        [self updateMyGroup];
-//                    }
+
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
                     [self.mygroupTableview reloadData];

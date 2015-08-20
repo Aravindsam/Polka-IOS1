@@ -31,6 +31,7 @@
     NSData *groupImageData;
     NSDateHumanizedType humanizedType;
     PFFile*userimage;
+    
 
 }
 

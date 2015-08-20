@@ -33,6 +33,7 @@
 
 
 }
+@property (strong, nonatomic) IBOutlet UIImageView *backgroundeffectImageview;
 @property(nonatomic,retain) UIDocumentInteractionController *documentationInteractionController;
 
 - (IBAction)uploadimg:(id)sender;

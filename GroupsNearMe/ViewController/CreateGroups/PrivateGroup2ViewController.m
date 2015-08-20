@@ -360,7 +360,7 @@
     pointVal = [PFGeoPoint geoPointWithLatitude:centre.latitude longitude:centre.longitude];
     sharedObj.groupLocation=pointVal;
     sharedObj.radiusVisibilityVal=radiusVisibilty;
-    PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+           PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
     
             groupimgurl=imageFile;
             PFObject *testObject = [PFObject objectWithClassName:@"Group"];
@@ -392,15 +392,16 @@
                 if (!error) {
                    
                     timestamp=[[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
+                    groupId=testObject.objectId;
                     PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
-                    member[@"GroupId"]=testObject.objectId;
+                    member[@"GroupId"]=groupId;
                     member[@"MemberNo"]=sharedObj.AccountNumber;
                     member[@"JoinedDate"]=[NSDate date];
                     member[@"AdditionalInfoProvided"]=@"";
                     member[@"ExitGroup"]=[NSNumber numberWithBool:NO];
                     member[@"LeaveDate"]=[NSDate date];
                     member[@"GroupAdmin"]=[NSNumber numberWithBool:YES];
-                 member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
+                    member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
                     member[@"MemberStatus"]=@"Active";
                     member[@"ExitedBy"]=@"";
                     member[@"MemberImage"]=userimage;
@@ -409,37 +410,38 @@
                     
                     member[@"UserId"]=pointer;
                     [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (succeeded) {
-
-                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-                    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-                    
-                    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
                         if (error) {
-                            NSLog(@"Data not available insert userdetails");
-                            [SVProgressHUD dismiss];
-                            
-                            
-                        } else {
-                            groupId=testObject.objectId;
-                            mygroup=userStats[@"MyGroupArray"];
-                            [mygroup addObject:testObject.objectId];
-                            userStats[@"MyGroupArray"]=mygroup;
-                            [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
-                            userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
-                            userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
-                            [userStats saveInBackground];
-                            
-                            [self CallMyService];
-                        }
-                    }];
+                               [SVProgressHUD dismiss];
                         }
                         else
-                        {
-                            [SVProgressHUD dismiss];
+                        {PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
+                            [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
+                            [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
+                            [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
+                                if (error) {
+                                    NSLog(@"Data not available insert userdetails");
+                                    [SVProgressHUD dismiss];
+                                    
+                                    
+                                } else {
+                                    mygroup=userStats[@"MyGroupArray"];
+                                    [mygroup addObject:testObject.objectId];
+                                    userStats[@"MyGroupArray"]=mygroup;
+                                    [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
+                                    userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                                    userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                                    [userStats saveInBackground];
+                                    [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
+                                    
+                                    [self CallMyService];
+                                }
+                            }];
+                         
                         }
                     }];
+
+                    
+                    
                     
                 }
                 else{
@@ -456,20 +458,7 @@
 {
     [SVProgressHUD showWithStatus:@"Group Created Successfully...." maskType:SVProgressHUDMaskTypeBlack];
 
-    [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
-    PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
-    [myquery whereKey:@"objectId" containedIn:mygroup];
-    [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
-    [myquery orderByDescending:@"updatedAt"];
-    [myquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error) {
-            NSLog(@"error in geo query!"); // todo why is this ever happening?
-        } else {
-            
-            [PFObject unpinAllObjectsInBackgroundWithName:@"MYGROUP"];
-            [PFObject pinAllInBackground:objects withName:@"MYGROUP"];
-        }
-    }];
+    
 
     [SVProgressHUD dismiss];
     
@@ -495,7 +484,20 @@
 
     [self.navigationController pushViewController:settingsViewController animated:YES];
     
-}
+    PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
+    [myquery whereKey:@"objectId" containedIn:mygroup];
+    [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
+    [myquery orderByDescending:@"updatedAt"];
+    [myquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            NSLog(@"error in geo query!"); // todo why is this ever happening?
+        } else {
+            
+            [PFObject unpinAllObjectsInBackgroundWithName:@"MYGROUP"];
+            [PFObject pinAllInBackground:objects withName:@"MYGROUP"];
+        }
+    }];
+    }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

@@ -57,6 +57,7 @@
 @property (strong, nonatomic) IBOutlet PFImageView *fullgroupimage;
 - (IBAction)close:(id)sender;
 - (IBAction)sharepic:(id)sender;
+@property (strong, nonatomic) IBOutlet UIImageView *backgroundeffectImageview;
 
 @property (strong, nonatomic) IBOutlet UIButton *changeimagebtn;
 @property (strong, nonatomic) IBOutlet UILabel *adminlbl;

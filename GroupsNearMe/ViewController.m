@@ -159,20 +159,20 @@
  
     _searchView.hidden=YES;
      _headerview.hidden=NO;
-    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:13.0],
+    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
                                                         NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
                                                         } forState:UIControlStateNormal];
-    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:13.0],
+    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
                                                         NSForegroundColorAttributeName : [UIColor whiteColor]
                                                         } forState:UIControlStateSelected];
     nearbyTabBarItem.tag=11;
     mygroupTabBarItem.tag=22;
 
     
-    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:13.0],
+    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
                                                NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
                                                } forState:UIControlStateNormal];
-    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:13.0],
+    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
                                                NSForegroundColorAttributeName : [UIColor whiteColor]
                                                } forState:UIControlStateSelected];
     

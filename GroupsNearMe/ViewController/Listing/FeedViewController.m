@@ -116,15 +116,11 @@
 -(void)shownewpost:(NSNotification *) notification
 {
     _newpostView.hidden=NO;
-    NSDictionary *userInfo = notification.userInfo;
-    NSString* myObject = [[userInfo objectForKey:@"COUNT"]stringValue];
-    if ([myObject isEqualToString:@"1"]) {
-         [_newpostbtn setTitle:[NSString stringWithFormat:@"%@ new post",myObject] forState:UIControlStateNormal];
-    }
-    else
-    {
-    [_newpostbtn setTitle:[NSString stringWithFormat:@"%@ new posts",myObject] forState:UIControlStateNormal];
-    }
+  //  NSDictionary *userInfo = notification.userInfo;
+  //  NSString* myObject = [[userInfo objectForKey:@"COUNT"]stringValue];
+   
+         [_newpostbtn setTitle:@"NEW POSTS" forState:UIControlStateNormal];
+     
 }
 -(void)doSomething
 {
@@ -627,8 +623,7 @@
 {
 
    
-    AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    [delegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+  
     NSData* data = [self compressImage:feedimage];
   
 
@@ -737,9 +732,11 @@
     postObject[@"PostStatus"]=@"Active";
     postObject[@"FeedLocation"]=point;
         PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-
+         postObject[@"FeedupdatedAt"]=[NSDate date];
         postObject[@"UserId"]=pointer;
-   
+       
+      
+
 
     [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (error) {
@@ -749,11 +746,13 @@
            [self.view makeToast:@"Unable to connect with server.Try again later" duration:3.0 position:@"bottom"];        }
         if (succeeded) {
             NSLog(@"ENTERED");
-            postObject[@"FeedupdatedAt"]=postObject.updatedAt;
-            [postObject saveInBackground];
-
-            [self.wallPostsTableViewController postWasCreated];
-              
+           
+            //[postObject saveInBackground];
+            NSArray *temp=[[NSArray alloc]initWithObjects:postObject, nil];
+            [PFObject pinAllInBackground:temp withName:sharedObj.GroupId block:^(BOOL succeeded, NSError *error) {
+                
+                [self.wallPostsTableViewController postWasCreated];
+                }];
             PFQuery *ownerquery=[PFQuery queryWithClassName:@"UserDetails"];
             [ownerquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
             [ownerquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -768,6 +767,7 @@
         }
         
     }];
+            
     }
     else
     {
@@ -826,17 +826,34 @@
     PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
     
     postObject[@"UserId"]=pointer;
-
+    postObject[@"FeedupdatedAt"]=[NSDate date];
             [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                
+                if (error) {
+                    NSLog(@"Couldn't save!");
+                    NSLog(@"%@", error);
+                    [SVProgressHUD dismiss];
+                    [self.view makeToast:@"Unable to connect with server.Try again later" duration:3.0 position:@"bottom"];        }
                 if (succeeded) {
-                    postObject[@"FeedupdatedAt"]=postObject.updatedAt;
-                    [postObject saveInBackground];
-                    [self.wallPostsTableViewController postWasCreated];
-
-                    [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
+                    NSArray *temp=[[NSArray alloc]initWithObjects:postObject, nil];
+                    [PFObject pinAllInBackground:temp withName:sharedObj.GroupId block:^(BOOL succeeded, NSError *error) {
+                        
+                        [self.wallPostsTableViewController postWasCreated];
+                        [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
+                    }];
                     
+                    PFQuery *ownerquery=[PFQuery queryWithClassName:@"UserDetails"];
+                    [ownerquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
+                    [ownerquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        for (PFObject *admin in objects) {
+                            [admin incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:100]];
+                            admin[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                            admin[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                            [admin saveInBackground];
                             
+                        }
+                    }];
+                    AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+                    [delegate.navigationController dismissViewControllerAnimated:YES completion:nil];
                           
                                            }
                 
@@ -944,7 +961,7 @@
 {
     _newpostView.hidden=YES;
     
-    [self.wallPostsTableViewController postWasCreated];
+    [self.wallPostsTableViewController callService ];
 }
 - (IBAction)updatepost:(id)sender {
  

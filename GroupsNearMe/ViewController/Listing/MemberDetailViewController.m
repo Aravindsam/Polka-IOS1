@@ -507,7 +507,7 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                     [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                      
                      break;
                      
@@ -534,7 +534,7 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
     
 }
@@ -558,7 +558,7 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
@@ -579,7 +579,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
 }
 
@@ -591,7 +591,7 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
         }
         else
         {
@@ -625,7 +625,7 @@
             }
             else
             {
-                [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+                [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
             }
             
             
@@ -635,7 +635,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

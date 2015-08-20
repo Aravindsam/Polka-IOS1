@@ -647,12 +647,8 @@
 //                {
 //                    int difference=heightimg-widthimg;
            
-            float hfactor = widthimg /self.tableView.frame.size.width;
-            float vfactor = heightimg/ self.tableView.frame.size.height;
-            
-            float factor = fmax(hfactor, vfactor);
-            float newHeight = heightimg / factor;
-            int difference=newHeight;
+            double aspectratio=(double)heightimg/widthimg;
+            double difference=aspectratio*(self.tableView.frame.size.width-40);
                     //int difference=(widthimg*heightimg)/widthimg;
             if(heightimg>widthimg)
             {
@@ -1405,7 +1401,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [self showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                         [self showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                          
                          break;
                          
@@ -1443,7 +1439,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                          
                          break;
                          
@@ -1471,7 +1467,7 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
     
 }
@@ -1496,7 +1492,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -1531,7 +1527,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -1552,7 +1548,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
 }
 
@@ -1564,7 +1560,7 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
         }
         else
         {
@@ -1605,7 +1601,7 @@
                 }
                 else
                 {
-                    [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+                    [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
                 }
                 
                 
@@ -1615,7 +1611,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

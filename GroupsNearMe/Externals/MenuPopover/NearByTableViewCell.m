@@ -88,12 +88,12 @@
     [super layoutSubviews];
     CGRect contentRect = self.contentView.bounds;
     groupImageview.frame=CGRectMake(5, 5,65,65);
-    groupnamelbl.frame=CGRectMake(75,5,contentRect.size.width-80,30);
+    groupnamelbl.frame=CGRectMake(80,5,contentRect.size.width-80,30);
     [self findFrameFromString:groupnamelbl.text andCorrespondingLabel:groupnamelbl];
-    memberImage.frame=CGRectMake(75,55, 15, 15);
-    memberlabel.frame=CGRectMake(95, 55,  contentRect.size.width-140,15);
+    memberImage.frame=CGRectMake(80,55, 15, 15);
+    memberlabel.frame=CGRectMake(100, 55,  contentRect.size.width-140,15);
     [self findFrameFromString:memberlabel.text andCorrespondingLabel:memberlabel];
-    memberlabel.frame=CGRectMake(95, 55,memberlabel.frame.size.width+10,15);
+    memberlabel.frame=CGRectMake(100, 55,memberlabel.frame.size.width+10,15);
     grouptypelbl.frame=CGRectMake(memberlabel.frame.size.width+100,55, 55, 15);
     
     requestlabel.frame=CGRectMake(contentRect.size.width-80,(contentRect.size.height/2)+10,70,20);

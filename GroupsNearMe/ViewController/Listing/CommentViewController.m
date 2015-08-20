@@ -103,38 +103,39 @@
 //    int difference=heightimg-widthimg;
 //    int height=320+difference;
 //    
-  
+    double aspectratio=(double)heightimg/widthimg;
+    double difference=aspectratio*self.fullimageScrollview.frame.size.width;
     
-    float hfactor = widthimg /self.fullimageScrollview.frame.size.width;
-    float vfactor = heightimg/ self.fullimageScrollview.frame.size.height;
-    
-    float factor = fmax(hfactor, vfactor);
-    
-    // Divide the size by the greater of the vertical or horizontal shrinkage factor
-    //float newWidth = widthimg / factor;
-    float newHeight = heightimg / factor;
-    int height=newHeight;
-      int difference = widthimg / factor;;
-    if(heightimg>widthimg)
+//    float hfactor = widthimg /self.fullimageScrollview.frame.size.width;
+//    float vfactor = heightimg/ self.fullimageScrollview.frame.size.height;
+//    
+//    float factor = fmax(hfactor, vfactor);
+//    
+//    // Divide the size by the greater of the vertical or horizontal shrinkage factor
+//    //float newWidth = widthimg / factor;
+//    float newHeight = heightimg / factor;
+//    int height=newHeight;
+//      int difference = widthimg / factor;;
+    if(aspectratio>1.0)
     {
 //         difference=((self.fullimageScrollview.frame.size.height)*widthimg)/heightimg;
 //         height=(widthimg*heightimg)/widthimg;
-        _fullimgView.frame=CGRectMake((self.fullimageScrollview.frame.size.width-difference)/2,(self.fullimageScrollview.frame.size.height-height)/2, difference, height);
+        _fullimgView.frame=CGRectMake(0,(self.fullimageScrollview.frame.size.height-difference)/2, self.fullimageScrollview.frame.size.width, difference);
     }
-    else if(heightimg==widthimg)
+    else if(aspectratio==1.0)
     {
 //           difference=((self.fullimageScrollview.frame.size.width)*heightimg)/widthimg;
 //        height=difference;
-        _fullimgView.frame=CGRectMake(0, (self.fullimageScrollview.frame.size.height-difference)/2, difference, height);
+        _fullimgView.frame=CGRectMake(0, (self.fullimageScrollview.frame.size.height-difference)/2, difference, difference);
 
     }
     else
     {
 //         height=((self.fullimageScrollview.frame.size.width)*heightimg)/widthimg;
 //        difference=320;
-        _fullimgView.frame=CGRectMake(0, (self.fullimageScrollview.frame.size.height-difference)/2, 320, height);
+        _fullimgView.frame=CGRectMake(0, (self.fullimageScrollview.frame.size.height-difference)/2, 320, difference);
     }
-    _fullimageScrollview.contentSize=CGSizeMake(difference,height );
+    _fullimageScrollview.contentSize=CGSizeMake(self.fullimageScrollview.frame.size.width,difference );
 }
 
 -(void)dismissFlag
@@ -519,7 +520,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [self showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                         [self showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                          
                          break;
                          
@@ -557,7 +558,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
                          
                          break;
                          
@@ -585,7 +586,7 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
     
 }
@@ -610,7 +611,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -645,7 +646,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"GroupsNearMe"];
+                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -666,7 +667,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
     }
 }
 
@@ -678,7 +679,7 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
         }
         else
         {
@@ -719,7 +720,7 @@
                 }
                 else
                 {
-                    [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"GroupsNearMe"];
+                    [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
                 }
                 
                 
@@ -729,7 +730,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"GroupsNearMe"];
+        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

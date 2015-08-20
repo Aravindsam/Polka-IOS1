@@ -238,14 +238,14 @@ static const CGFloat SVProgressHUDParallaxDepthPoints = 10;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.activityCount = 0;
         
-        SVProgressHUDBackgroundColor = [UIColor whiteColor];
-        SVProgressHUDForegroundColor = [UIColor blackColor];
+        SVProgressHUDBackgroundColor = [UIColor clearColor];
+        SVProgressHUDForegroundColor = [UIColor lightGrayColor];
         if ([UIFont respondsToSelector:@selector(preferredFontForTextStyle:)]) {
           SVProgressHUDFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
         } else {
           SVProgressHUDFont = [UIFont systemFontOfSize:14.0];
-          SVProgressHUDBackgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
-          SVProgressHUDForegroundColor = [UIColor whiteColor];
+          SVProgressHUDBackgroundColor = [UIColor clearColor];
+          SVProgressHUDForegroundColor = [UIColor lightGrayColor];
         }
         if ([[UIImage class] instancesRespondToSelector:@selector(imageWithRenderingMode:)]) {
           SVProgressHUDSuccessImage = [[UIImage imageNamed:@"SVProgressHUD.bundle/success"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

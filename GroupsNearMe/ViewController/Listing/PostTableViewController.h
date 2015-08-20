@@ -63,6 +63,8 @@
 -(void)deleteAction:(int)index7;
 -(void)Profiletap:(int)index8;
 -(void)postWasCreated;
+
+-(void)callService;
 @property (nonatomic, weak) id<PostTableViewControllerDataSource> dataSource;
 
 @end

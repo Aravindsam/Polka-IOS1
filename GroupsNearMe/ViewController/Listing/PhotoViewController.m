@@ -107,8 +107,8 @@
     }];
    
     cell.photoImageView.backgroundColor=[UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1.0];
-   [cell.photoImageView setContentMode:UIViewContentModeCenter];
-    cell.photoImageView.clipsToBounds=YES;
+//   [cell.photoImageView setContentMode:UIViewContentModeCenter];
+//    cell.photoImageView.clipsToBounds=YES;
     return cell;
 }
 -(UIImage *)squareAndSmall :(UIImage*)oringinalimage{
