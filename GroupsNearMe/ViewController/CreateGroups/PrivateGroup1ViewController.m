@@ -26,14 +26,11 @@
     sharedObj=[Generic sharedMySingleton];
     next=NO;
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-   // _nextbtn.backgroundColor=[Generic colorFromRGBHexString:headerColor];_addlabel.hidden=NO;
-      _groupnameTextfield.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
+    _groupnameTextfield.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
     
     _locationManager = [[CLLocationManager alloc] init];
-    
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    
     // Set a movement threshold for new events.
     _locationManager.distanceFilter = kCLLocationAccuracyNearestTenMeters;
     if(IS_OS_8_OR_LATER) {
@@ -41,8 +38,8 @@
       //  [_locationManager requestAlwaysAuthorization];
     }
     [_locationManager startUpdatingLocation];
-    _headerview.layer.borderColor=[UIColor lightGrayColor].CGColor;
-    _headerview.layer.borderWidth=0.5;
+    
+   
     
     groupDescription=[[NSString alloc]init];
     groupName=[[NSString alloc]init];
@@ -99,6 +96,7 @@
     UITapGestureRecognizer *tapgestur=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(chooseImage)];
     tapgestur.numberOfTapsRequired=1;
     [_backgroundImageView addGestureRecognizer:tapgestur];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(doSomething)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
@@ -142,9 +140,6 @@
     double latdouble = [lat doubleValue];
     double londouble = [lon doubleValue];
     CLLocationCoordinate2D coord = {latdouble,londouble};
-    
-    
-    
     
     if (currentLocation != nil) {
         point = [PFGeoPoint geoPointWithLatitude:coord.latitude longitude:coord.longitude];
@@ -386,7 +381,7 @@
 
 -(void)image:(UIImage *)image finishedSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     if (error){
-        [self showAlert:@"Failed to save image"];
+         [self.view makeToast:@"Failed to save image" duration:3.0 position:@"bottom"];
     }
 }
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -404,26 +399,18 @@
     return YES;
 }
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 - (IBAction)back:(id)sender {
     sharedObj.groupimageData=nil;
     sharedObj.aboutGroup=nil;
+    sharedObj.groupdescription=nil;
     sharedObj.groupLocation=nil;
-    sharedObj.radiusVisibilityVal=0;
+    sharedObj.radiusVisibilityVal=50;
     sharedObj.openEntryVal=0;
     sharedObj.GroupName=nil;
     sharedObj.inviteNo=nil;
     sharedObj.otherText=nil;
     sharedObj.AdditionalInfotext=nil;
-    sharedObj.greenchannelArray=nil;
-    sharedObj.selectedIdArray=nil;
     sharedObj.MemberApproval=NO;
     
     [[self navigationController]popViewControllerAnimated:YES];
@@ -441,9 +428,17 @@
     groupName=[groupName capitalizedString];
     groupName=[groupName stringByTrimmingCharactersInSet:
                [NSCharacterSet whitespaceCharacterSet]];
+    
+    if (_backgroundImageView.image==nil) {
+        next=NO;
+     
+         [self.view makeToast:@"Please upload a group image" duration:3.0 position:@"bottom"];
+        return;
+        
+    }
     if (groupName == NULL || groupName.length ==0) {
         next=NO;
-        [self showAlert:@"Please enter group name"];
+         [self.view makeToast:@"Please enter group name" duration:3.0 position:@"bottom"];
         [_groupnameTextfield becomeFirstResponder];
         
         return ;
@@ -453,25 +448,11 @@
     
     if (groupDescription.length==0) {
         next=NO;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please write a description for your group"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+       
+         [self.view makeToast:@"Please write a description for your group" duration:3.0 position:@"bottom"];
         return;
     }
-    if (_backgroundImageView.image==nil) {
-        next=NO;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please upload a group image"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
-        return;
-        
-    }
+   
     PFQuery *query = [PFQuery queryWithClassName:@"Group"];
     [query whereKey:@"GroupName" equalTo:groupName];
     [query whereKey:@"GroupLocation" nearGeoPoint:point withinMiles:0.310686];
@@ -480,17 +461,10 @@
         if (error) {
         }
         else{
-            
-            
             if (objects.count!=0) {
                 next=NO;
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                message:@"Group name already exists. Please try another name"
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                [alert show];
-                
+               
+                 [self.view makeToast:@"Group name already exists. Please try another name" duration:3.0 position:@"bottom"];
                 return;
                 
                 

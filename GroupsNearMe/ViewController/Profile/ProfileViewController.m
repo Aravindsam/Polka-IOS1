@@ -266,14 +266,7 @@
 -(void)image:(UIImage *)image finishedSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     
 }
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 - (IBAction)updateProfile:(id)sender {
     BOOL internetconnect=[sharedObj connected];
     
@@ -287,7 +280,8 @@
     profilename=[profilename stringByTrimmingCharactersInSet:
                  [NSCharacterSet whitespaceCharacterSet]];
     if (profilename == NULL || profilename.length ==0) {
-        [self showAlert:@"Enter your name "];
+       // [self showAlert:@"Enter your name "];
+         [self.view makeToast:@"Enter your name" duration:3.0 position:@"bottom"];
         [_nameTextfield becomeFirstResponder];
         return ;
     }
@@ -398,8 +392,9 @@
                     else
                     {
                            [SVProgressHUD dismiss];
-                        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Service unavailable please try later" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                        [alert show];
+                       
+                        
+                         [self.view makeToast:@"Service unavailable please try later" duration:3.0 position:@"bottom"];
                         return;
                     }
                     
@@ -565,12 +560,13 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
+                         
+                          [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                          
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
-                         //                     [self showAlertWithMessage:@"Post Cancelled." Title:@"iFlicks"];
+                        
                          break;
                      default:
                          break;
@@ -592,15 +588,12 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+      
+         [self.view makeToast:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings" duration:3.0 position:@"bottom"];
     }
     
 }
--(void)showAlertWithMessage:(NSString *)message Title:(NSString *)title
-{
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [alert show];
-}
+
 -(void)twitterShareSelected:(UIImage*)ImageData
 {
     if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
@@ -616,7 +609,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
+                          [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -637,7 +630,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+         [self.view makeToast:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings" duration:3.0 position:@"bottom"];
     }
 }
 
@@ -649,7 +642,7 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+             [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
         }
         else
         {
@@ -683,7 +676,8 @@
                 }
                 else
                 {
-                    [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+       
+                     [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
                 }
                 
                 
@@ -693,7 +687,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
+         [self.view makeToast:@"WhatsApp Feature is not applicable" duration:3.0 position:@"bottom"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

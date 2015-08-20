@@ -338,33 +338,33 @@
 
     if (name == NULL || name.length ==0) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please enter your name"];
+        //[self showAlert:@"Please enter your name"];
+         [self.view makeToast:@"Please enter your name" duration:3.0 position:@"bottom"];
         [_nameTextfield becomeFirstResponder];
         return ;
     }
     if (gender == NULL || gender.length ==0) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Choose your Gender"];
+        //[self showAlert:@"Choose your Gender"];
+         [self.view makeToast:@"Choose your Gender" duration:3.0 position:@"bottom"];
         return ;
     }
     if (email == NULL || email.length ==0) {
-        [self showAlert:@"Please enter a valid email address"];
+       // [self showAlert:@"Please enter a valid email address"];
+         [self.view makeToast:@"Please enter a valid email address" duration:3.0 position:@"bottom"];
         [_emailTextfield becomeFirstResponder];
         return ;
     }
     if (![self validateEmailWithString:email]) {
-        [self showAlert:@"Invalid email address"];
+       // [self showAlert:@"Invalid email address"];
+         [self.view makeToast:@"Invalid email address" duration:3.0 position:@"bottom"];
         [_emailTextfield becomeFirstResponder];
         return ;
     }
     if (_backgroundimageview.image==nil) {
         
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                            message:@"Please upload a User image"
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+        
+         [self.view makeToast:@"Please upload a User image" duration:3.0 position:@"bottom"];
             return;
             
         }
@@ -464,8 +464,8 @@
                 else{
                     // Error
                     [SVProgressHUD dismiss];
-                    [self showAlert:@"Account cannot be created.Please try again later"];
-
+               
+                    [self.view makeToast:@"Account cannot be created.Please try again later" duration:3.0 position:@"bottom"];
                     return ;
                     
                 }
@@ -489,14 +489,7 @@
  
 }
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 - (IBAction)femalebtnClicked:(id)sender {
     [_nameTextfield resignFirstResponder];
     [_malebtn setImage:[UIImage imageNamed:@"unselected.png"] forState:UIControlStateNormal];

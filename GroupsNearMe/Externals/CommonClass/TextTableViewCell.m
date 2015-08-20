@@ -222,13 +222,13 @@
        
         
         if (textvalLabel.hidden) {
-             postImageview.frame=CGRectMake(10, [self findViewHeight:toplinelabel.frame]+8, self.postView.frame.size.width-20, self.postView.frame.size.height-150);
+             postImageview.frame=CGRectMake(0, [self findViewHeight:toplinelabel.frame]+8, self.postView.frame.size.width, self.postView.frame.size.height-150);
              pointlabel.frame=CGRectMake(10, [self findViewHeight:postImageview.frame]+10,postView.frame.size.width-60, 30);
         }
         else
         {
             textvalLabel.frame=CGRectMake(10, [self findViewHeight:toplinelabel.frame]+3,postView.frame.size.width-20,45);
-            postImageview.frame=CGRectMake(10, [self findViewHeight:textvalLabel.frame], self.postView.frame.size.width-20, self.postView.frame.size.height-195);
+            postImageview.frame=CGRectMake(0, [self findViewHeight:textvalLabel.frame], self.postView.frame.size.width, self.postView.frame.size.height-195);
              pointlabel.frame=CGRectMake(10,[self findViewHeight:postImageview.frame]+10,postView.frame.size.width-60, 30);
         }
         

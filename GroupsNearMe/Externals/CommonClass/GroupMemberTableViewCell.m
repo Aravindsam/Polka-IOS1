@@ -50,7 +50,7 @@
     [super layoutSubviews];
     CGRect contentRect = self.contentView.bounds;
     postView.frame=CGRectMake(10, 10, contentRect.size.width-20, contentRect.size.height-20);
-      namelbl.frame=CGRectMake(65,30,postView.frame.size.width-95, 20);
+      namelbl.frame=CGRectMake(65,33,postView.frame.size.width-95, 15);
     [namelbl sizeToFit];
     profileImageView.frame=CGRectMake(0, 0, 50, 50);
     adminlbl.frame=CGRectMake(namelbl.frame.size.width+85, 35, 15, 15);

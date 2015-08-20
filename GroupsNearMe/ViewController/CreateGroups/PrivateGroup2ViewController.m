@@ -27,34 +27,22 @@
      create=NO;
     currentdate=[[NSString alloc]init];
     timestamp=[[NSString alloc]init];
+    groupId=[[NSString alloc]init];
+    groupimgurl=[[PFFile alloc]init];
+    mygroup=[[NSMutableArray alloc]init];
     humanizedType = NSDateHumanizedSuffixAgo;
 
 
     sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
        sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
-    groupId=[[NSString alloc]init];
-    groupimgurl=[[PFFile alloc]init];
-    mygroup=[[NSMutableArray alloc]init];
     
-    PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-    [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query1 fromLocalDatastore];
-    [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (error) {
-        }
-        else{
-            userimage =[object objectForKey:@"ThumbnailPicture"];
-        }}];
     _locationManager = [[CLLocationManager alloc] init];
-    
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _locationManager.distanceFilter = kCLLocationAccuracyNearestTenMeters;
     if(IS_OS_8_OR_LATER) {
         [_locationManager requestWhenInUseAuthorization];
-       // [_locationManager requestAlwaysAuthorization];
     }
     [_locationManager startUpdatingLocation];
     
@@ -94,14 +82,8 @@
     [self.radiusSlider addGestureRecognizer:gr];
      _visibilitylabel.text=[NSString stringWithFormat:@"%d",sharedObj.radiusVisibilityVal];
     radiusVisibilty=sharedObj.radiusVisibilityVal;
-//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
-//    radiusVisibilty =(int)self.radiusSlider.value;
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d", radiusVisibilty ]] forState:_radiusSlider.state];
-      [self showUserLocation];
- 
-  
-    
 
+      [self showUserLocation];
     // Do any additional setup after loading the view.
 }
 - (IBAction) startShowingUserHeading:(id)sender{
@@ -294,10 +276,8 @@
     [s setValue:value animated:YES];
     radiusVisibilty =(int)self.radiusSlider.value;
     [self fitthemap:radiusVisibilty];
-    
-    
-    
-   _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
+
+    _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
     
 }
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id < MKOverlay >)overlay {
@@ -342,8 +322,7 @@
     radiusVisibilty =(int)self.radiusSlider.value;
     [self fitthemap:radiusVisibilty];
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
-//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d",radiusVisibilty ]] forState:_radiusSlider.state];
+
 }
 - (IBAction)nextbtnClicked:(id)sender
 {
@@ -360,9 +339,9 @@
     pointVal = [PFGeoPoint geoPointWithLatitude:centre.latitude longitude:centre.longitude];
     sharedObj.groupLocation=pointVal;
     sharedObj.radiusVisibilityVal=radiusVisibilty;
-           PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+    PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+    groupimgurl=imageFile;
     
-            groupimgurl=imageFile;
             PFObject *testObject = [PFObject objectWithClassName:@"Group"];
             testObject[@"MobileNo"]=sharedObj.AccountNumber;
             testObject[@"CountryName"]=sharedObj.AccountCountry;
@@ -383,8 +362,6 @@
              testObject[@"AdminArray"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
             testObject[@"AdditionalInfoRequired"]=[NSNumber numberWithBool:NO];
             testObject[@"InfoRequired"]=@"";
-            testObject[@"LatestPost"]=@"";
-            
             testObject[@"VisibiltyRadius"]=[NSNumber numberWithInt:sharedObj.radiusVisibilityVal];
             testObject[@"SecretStatus"]=[NSNumber numberWithBool:NO];
             testObject[@"SecretCode"]=@"";
@@ -393,6 +370,7 @@
                    
                     timestamp=[[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
                     groupId=testObject.objectId;
+                    
                     PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
                     member[@"GroupId"]=groupId;
                     member[@"MemberNo"]=sharedObj.AccountNumber;
@@ -404,25 +382,16 @@
                     member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
                     member[@"MemberStatus"]=@"Active";
                     member[@"ExitedBy"]=@"";
-                    member[@"MemberImage"]=userimage;
-                    member[@"MemberName"]=sharedObj.AccountName;
                     PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                    
                     member[@"UserId"]=pointer;
-                    [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (error) {
-                               [SVProgressHUD dismiss];
-                        }
-                        else
-                        {PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                            [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-                            [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-                            [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
+                    [member saveInBackground];
+                    
+                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
+                    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
                                 if (error) {
                                     NSLog(@"Data not available insert userdetails");
                                     [SVProgressHUD dismiss];
-                                    
-                                    
+            
                                 } else {
                                     mygroup=userStats[@"MyGroupArray"];
                                     [mygroup addObject:testObject.objectId];
@@ -432,7 +401,6 @@
                                     userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
                                     [userStats saveInBackground];
                                     [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
-                                    
                                     [self CallMyService];
                                 }
                             }];
@@ -440,25 +408,11 @@
                         }
                     }];
 
-                    
-                    
-                    
-                }
-                else{
-                    // Error
-                    [SVProgressHUD dismiss];
-                    NSLog(@"Error: %@ %@", error, [error userInfo]);
-                    [SVProgressHUD dismiss];
-                }
-            }];
-        
-
 }
+
 -(void)CallMyService
 {
     [SVProgressHUD showWithStatus:@"Group Created Successfully...." maskType:SVProgressHUDMaskTypeBlack];
-
-    
 
     [SVProgressHUD dismiss];
     

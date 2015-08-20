@@ -421,19 +421,13 @@
 
 -(void)image:(UIImage *)image finishedSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     if (error){
-        [self showAlert:@"Failed to save image"];
+       
+         [self.view makeToast:@"Failed to save image" duration:3.0 position:@"bottom"];
     }
 }
 
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -473,7 +467,8 @@
     if (groupName == NULL || groupName.length ==0) {
        update=NO;
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please enter group name"];
+       
+         [self.view makeToast:@"Please enter group name" duration:3.0 position:@"bottom"];
         [_groupnameTextfield becomeFirstResponder];
         return ;
     }
@@ -482,23 +477,16 @@
     if (groupDescription.length==0) {
         update=NO;
         [SVProgressHUD dismiss];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please write a description for your group"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+
+        
+        [self.view makeToast:@"Please write a description for your group" duration:3.0 position:@"bottom"];
         return;
     }
     if (_backgroundImageView.image==nil) {
           update=NO;
         [SVProgressHUD dismiss];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please upload a group image"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+       
+         [self.view makeToast:@"Please upload a group image" duration:3.0 position:@"bottom"];
         return;
         
     }
@@ -548,13 +536,8 @@
             if (objects.count!=0) {
                   update=NO;
                 [SVProgressHUD dismiss];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                message:@"Group name already exists. Please try another name"
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                [alert show];
-                
+               
+                 [self.view makeToast:@"Group name already exists. Please try another name" duration:3.0 position:@"bottom"];
                 return;
                 
                 
@@ -687,27 +670,12 @@
                         PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
                         
                         testObject[@"UserId"]=pointer;
-                        [testObject saveInBackground];
-                        
-                        PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-                        [query whereKey:@"objectId" equalTo:modal.groupId];
-                        
-                        [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
-                            if (error) {
-                                NSLog(@"Data not available insert userdetails");
-                                [SVProgressHUD dismiss];
-                                
-                                
-                            } else {
-                                userStats[@"LatestPost"]=[NSString stringWithFormat:@"No Additional Information Available"];
-                               
-                                [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                     if (succeeded) {
                                         [self sendinginvitation];
                                     }
                                 }];
-                            }
-                        }];
+                        
                         
                         
                     }
@@ -750,28 +718,13 @@
                 PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
                 
                 testObject[@"UserId"]=pointer;
-                [testObject saveInBackground];
-                
-                PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-                [query whereKey:@"objectId" equalTo:modal.groupId];
-                
-                [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
-                    if (error) {
-                        NSLog(@"Data not available insert userdetails");
-                        [SVProgressHUD dismiss];
-                        
-                        
-                    } else {
-                        userStats[@"LatestPost"]=[NSString stringWithFormat:@"No Additional Information Available"];
-                       
-                        [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                [testObject  saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                             if (succeeded) {
                                 [self sendinginvitation];
                                 
                             }
                         }];
-                    }
-                }];
+                
             }
         }
         
@@ -1067,29 +1020,13 @@
                 testObject[@"UserId"]=pointer;
                 testObject[@"FeedLocation"]=point;
                 testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - %@",modal.addinfoString,Additioninfo.text];
-                [testObject saveInBackground];
-                
-                PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-                [query whereKey:@"objectId" equalTo:modal.groupId];
-                
-                [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
-                    if (error) {
-                        NSLog(@"Data not available insert userdetails");
-                        [SVProgressHUD dismiss];
-                        
-                        
-                    } else {
-                        userStats[@"LatestPost"]=[NSString stringWithFormat:@"%@ - %@",modal.addinfoString,Additioninfo.text];
-                       
-                        [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                [testObject  saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                             if (succeeded) {
                                 [self sendinginvitation];
                                 
                             }
                         }];
-                    }
-                }];
-                
+                                 
                 
                 
             }
@@ -1119,10 +1056,8 @@
             }
             else
             {
-                UIAlertView *errorAlert = [[UIAlertView alloc]
-                                           initWithTitle:@"Error" message:@"Incorrect Passcode entered" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                errorAlert.tag=111;
-                [errorAlert show];
+              
+                 [self.view makeToast:@"Incorrect Passcode entered" duration:3.0 position:@"bottom"];
                 
             }
         }
@@ -1229,12 +1164,13 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
+                     
+                      [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                      
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
-                     //                     [self showAlertWithMessage:@"Post Cancelled." Title:@"iFlicks"];
+                    
                      break;
                  default:
                      break;
@@ -1256,15 +1192,13 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+
+        
+         [self.view makeToast:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." duration:3.0 position:@"bottom"];
     }
     
 }
--(void)showAlertWithMessage:(NSString *)message Title:(NSString *)title
-{
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [alert show];
-}
+
 -(void)twitterShareSelected:(UIImage*)ImageData
 {
     if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
@@ -1280,7 +1214,8 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
+                   
+                      [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
@@ -1301,7 +1236,8 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+        
+         [self.view makeToast:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." duration:3.0 position:@"bottom"];
     }
 }
 
@@ -1313,7 +1249,8 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+          
+             [self.view makeToast:@"You must configure WhatsApp account for sharing." duration:3.0 position:@"bottom"];
         }
         else
         {
@@ -1347,7 +1284,8 @@
             }
             else
             {
-                [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+              
+                 [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
             }
             
             
@@ -1357,7 +1295,8 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
+       
+         [self.view makeToast:@"WhatsApp Feature is not applicable" duration:3.0 position:@"bottom"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

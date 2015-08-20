@@ -192,24 +192,27 @@
 
     if (countrycode == NULL || countrycode.length ==0) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Not Available"];
+       
+        [self.view makeToast:@"Not Available" duration:3.0 position:@"bottom"];
         return ;
     }
     if (![CountryArray containsObject:countrycode]) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please Choose the available Country Code"];
+        
+        [self.view makeToast:@"Please Choose the available Country Code" duration:3.0 position:@"bottom"];
         return ;
     }
     if (mobileno == NULL || mobileno.length ==0) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please enter a valid number"];
+        [self.view makeToast:@"Please enter a valid number" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
     else if (mobileno.length<10)
     {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please enter a valid mobile number"];
+        
+         [self.view makeToast:@"Please enter a valid mobile number" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
@@ -351,10 +354,8 @@
     if (signupRequest.tag==11) {
         if (response.responseString.length==0)
         {
-            [SVProgressHUD dismiss];
-            
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:@"Service unavailable please try later" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
+            [SVProgressHUD dismiss];            
+             [self.view makeToast:@"Service unavailable please try later" duration:3.0 position:@"bottom"];
             return;
         }
         [SVProgressHUD dismiss];
@@ -384,12 +385,5 @@
     return randomString;
 }
 
--(void)showAlert:(NSString*)text{
-UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                message:text
-                                               delegate:nil
-                                      cancelButtonTitle:@"OK"
-                                      otherButtonTitles:nil];
-[alert show];
-}
+
 @end

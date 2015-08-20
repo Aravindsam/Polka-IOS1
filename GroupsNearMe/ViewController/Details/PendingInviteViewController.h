@@ -25,7 +25,6 @@
     int indexval;
     CLLocationDistance distancefromgroup;
     CLLocation *grouplocation,*userlocation;
-    PFFile*userimage;
     NSString*currentdate;
     NSDateHumanizedType humanizedType;
 

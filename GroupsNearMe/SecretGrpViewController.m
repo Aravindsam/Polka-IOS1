@@ -32,13 +32,14 @@
     timestamp=[[NSString alloc]init];
     sharedObj=[Generic sharedMySingleton];
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-   // _gobtn.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-      _groupnameTextfield.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
+    _groupnameTextfield.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
     create=NO;
-     _addlabel.hidden=NO;
+    _addlabel.hidden=NO;
+    
     sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
     sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
        sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    
     groupName=[[NSString alloc]init];
     secretcode=[[NSString alloc]init];
     groupimgurl=[[PFFile alloc]init];
@@ -59,9 +60,7 @@
     _groupnameTextfield.layer.borderWidth=0.5;
     _groupnameTextfield.layer.cornerRadius=5;
     _groupnameTextfield.clipsToBounds=YES;
-    
-   
-    
+
     _addlabel.layer.cornerRadius=12.5;
     _addlabel.clipsToBounds=YES;
     
@@ -75,17 +74,6 @@
     tapgestur.numberOfTapsRequired=1;
     [_backgroundImageView addGestureRecognizer:tapgestur];
     
-    PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-    [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query1 fromLocalDatastore];
-    [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (error) {
-        }
-        else{
-            userimage =[object objectForKey:@"ThumbnailPicture"];
-        }}];
-    
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
@@ -94,12 +82,14 @@
       //  [locationManager requestAlwaysAuthorization];
     }
     [locationManager startUpdatingLocation];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(doSomething)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
    _secretScrollview.contentSize=CGSizeMake(_secretScrollview.frame.size.width, [self findViewHeight:_secretgrpView.frame]);
     // Do any additional setup after loading the view.
 }
@@ -122,10 +112,6 @@
   
     _secretScrollview.contentSize=CGSizeMake(_secretScrollview.frame.size.width, [self findViewHeight:_secretgrpView.frame]+220);
 }
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    
-}
-
 -(void)keyboardWillHide:(id)sender
 {
     _secretScrollview.contentSize=CGSizeMake(_secretScrollview.frame.size.width, [self findViewHeight:_secretgrpView.frame]);
@@ -180,16 +166,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 - (IBAction)back:(id)sender {
     if (create) {
         return;
@@ -198,13 +174,12 @@
     sharedObj.groupimageData=nil;
     sharedObj.aboutGroup=nil;
     sharedObj.groupLocation=nil;
-    sharedObj.radiusVisibilityVal=0;
+    sharedObj.radiusVisibilityVal=50;
     sharedObj.openEntryVal=0;
     sharedObj.GroupName=nil;
     sharedObj.inviteNo=nil;
     sharedObj.otherText=nil;
     sharedObj.AdditionalInfotext=nil;
-    sharedObj.greenchannelArray=nil;
     sharedObj.MemberApproval=NO;
     [[self navigationController]popViewControllerAnimated:YES];
     }
@@ -229,10 +204,7 @@
     double latdouble = [lat doubleValue];
     double londouble = [lon doubleValue];
     CLLocationCoordinate2D coord = {latdouble,londouble};
-    
-    
-    
-    
+
     if (currentLocation != nil) {
         point = [PFGeoPoint geoPointWithLatitude:coord.latitude longitude:coord.longitude];
     }
@@ -370,7 +342,8 @@
 
 -(void)image:(UIImage *)image finishedSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     if (error){
-        [self showAlert:@"Failed to save image"];
+         [self.view makeToast:@"Failed to save image" duration:3.0 position:@"bottom"];
+        
     }
 }
 -(NSData *)compressImage:(UIImage *)imagedata{
@@ -467,13 +440,31 @@
     groupName=[groupName capitalizedString];
     groupName=[groupName stringByTrimmingCharactersInSet:
                [NSCharacterSet whitespaceCharacterSet]];
+    if (_backgroundImageView.image==nil) {
+        create=NO;
+        [SVProgressHUD dismiss];
+       
+         [self.view makeToast:@"Please upload a group image" duration:3.0 position:@"bottom"];
+        return;
+        
+    }
+
     if (groupName == NULL || groupName.length ==0) {
         create=NO;
-        [self showAlert:@"Please enter group name"];
+         [self.view makeToast:@"Please enter group name" duration:3.0 position:@"bottom"];
         [_groupnameTextfield becomeFirstResponder];
         return ;
     }
+    groupDescription=_aboutTextview.text;
     
+    if (groupDescription.length==0) {
+        create=NO;
+        [SVProgressHUD dismiss];
+        
+         [self.view makeToast:@"Please write a description for your group" duration:3.0 position:@"bottom"];
+        return;
+    }
+
     
     sharedObj.GroupName=groupName;
     [SVProgressHUD showWithStatus:@"Creating Group...." maskType:SVProgressHUDMaskTypeBlack];
@@ -490,52 +481,23 @@
             if (objects.count!=0) {
                  create=NO;
                 [SVProgressHUD dismiss];
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                message:@"Group name already exists. Please try another name"
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                [alert show];
+               
+                 [self.view makeToast:@"Group name already exists. Please try another name" duration:3.0 position:@"bottom"];
                 return;
                 
                 
             }
             else
-            {                groupDescription=_aboutTextview.text;
-                
-                if (groupDescription.length==0) {
-                     create=NO;
-                    [SVProgressHUD dismiss];
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                    message:@"Please write a description for your group"
-                                                                   delegate:nil
-                                                          cancelButtonTitle:@"OK"
-                                                          otherButtonTitles:nil];
-                    [alert show];
-                    return;
-                }
-                if (_backgroundImageView.image==nil) {
-                     create=NO;
-                    [SVProgressHUD dismiss];
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                    message:@"Please upload a group image"
-                                                                   delegate:nil
-                                                          cancelButtonTitle:@"OK"
-                                                          otherButtonTitles:nil];
-                    [alert show];
-                    return;
-                    
-                }
+            {
                 secretcode=[self randomStringWithLength:5];
                 NSData* data = groupImageData;
                 PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:data];
+                groupimgurl=imageFile;
                 
-                        groupimgurl=imageFile;
                         PFObject *testObject = [PFObject objectWithClassName:@"Group"];
                         testObject[@"MobileNo"]=sharedObj.AccountNumber;
                         testObject[@"CountryName"]=sharedObj.AccountCountry;
                         testObject[@"GroupName"]=sharedObj.GroupName;
-                        
                         testObject[@"GroupPicture"]=imageFile;
                         testObject[@"GroupDescription"]=groupDescription;
                         testObject[@"GroupType"]=@"Secret";
@@ -550,7 +512,6 @@
                         testObject[@"JobHours"]=[NSNumber numberWithInt:0];
                         testObject[@"GroupMembers"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
                          testObject[@"AdminArray"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
-                        testObject[@"LatestPost"]=@"";
                        
                         testObject[@"AdditionalInfoRequired"]=[NSNumber numberWithBool:NO];
                         testObject[@"InfoRequired"]=@"";
@@ -562,6 +523,7 @@
                                 NSLog(@"Saved");
                                 groupId=testObject.objectId;
                                 timestamp = [[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
+                                
                                 PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
                                 member[@"GroupId"]=groupId;
                                 member[@"MemberNo"]=sharedObj.AccountNumber;
@@ -571,23 +533,13 @@
                                 member[@"GroupAdmin"]=[NSNumber numberWithBool:YES];
                                 member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
                                 member[@"LeaveDate"]=[NSDate date];
-                                member[@"MemberImage"]=userimage;
-                                member[@"MemberName"]=sharedObj.AccountName;
                                 member[@"MemberStatus"]=@"Active";
                                 member[@"ExitedBy"]=@"";
                                 PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                                
                                 member[@"UserId"]=pointer;
-                                [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                    if (error) {
-                                         [SVProgressHUD dismiss];
-                                    }
-                                    else
-                                    {
-                                        [SVProgressHUD dismiss];
+                                [member saveInBackground];
                                         
                                         PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                                        
                                         [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
                                             if (error) {
                                                 NSLog(@"Data not available insert userdetails");
@@ -614,20 +566,9 @@
                                 }];
                                 
                             }
-                            else{
-                                // Error
-                                NSLog(@"Error: %@ %@", error, [error userInfo]);
-                                [SVProgressHUD dismiss];
-                            }
-                        }];
-                
-
-            }
-            
-            
         }
     }];
-
+    
 }
 
 
@@ -635,15 +576,13 @@
 {
     
     [SVProgressHUD showWithStatus:@"Group Created Successfully...." maskType:SVProgressHUDMaskTypeBlack];
-
     [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
                     [SVProgressHUD dismiss];
     
    
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                InsideGroupViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InsideGroupViewController"];
-          
-                
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    InsideGroupViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InsideGroupViewController"];
+
                 sharedObj.groupType=@"Secret";
                 sharedObj.GroupId=groupId;
                 sharedObj.frommygroup=NO;
@@ -694,12 +633,5 @@
     return randomString;
 }
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 @end

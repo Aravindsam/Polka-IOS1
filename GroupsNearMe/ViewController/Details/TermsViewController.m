@@ -17,10 +17,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    //[_termsWebview setScalesPageToFit:YES];
     sharedObj=[Generic sharedMySingleton];
     _header.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-//   NSString *urlString=@"http://groupsnearme.com/Registration/TermsOfUseMobile";
     _headerlbl.text=headerTitle;
     BOOL internetconnect=[sharedObj connected];
     
@@ -55,11 +53,8 @@
         [[self navigationController]popViewControllerAnimated:YES];
     }
     else{
-//    [[NSNotificationCenter defaultCenter]postNotificationName:@"UPDATE PROFILE" object:nil];
      [[NSNotificationCenter defaultCenter]postNotificationName:@"CALLHOME" object:nil];
-//    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
-//        
-//    }];
+
     }
 }
 @end

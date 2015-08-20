@@ -8,7 +8,7 @@
 
 #import "MyGroupViewController.h"
 #import "MyGroupTableViewCell.h"
-#import "SVProgressHUD.h"
+
 #import "InsideGroupViewController.h"
 #import "GroupModalClass.h"
 #import "SVPullToRefresh.h"
@@ -24,18 +24,17 @@
     sharedobj=[Generic sharedMySingleton];
     humanizedType = NSDateHumanizedSuffixAgo;
 
-    sharedobj.AccountName=[[NSUserDefaults standardUserDefaults]objectForKey:@"UserName"];
-    sharedobj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
-       sharedobj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
-    sharedobj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
+
+    sharedobj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     lastupdate=[[NSUserDefaults standardUserDefaults] objectForKey:@"LASTUPDATED"];
+    mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
+
     currentdate=[[NSString alloc]init];
     self.mygroupTableview.separatorStyle=UITableViewCellSeparatorStyleNone;
 
     NSDateFormatter *sdateFormatter = [[NSDateFormatter alloc] init];
     [sdateFormatter setDateFormat:@"MMM dd,yyyy ,hh:mm"];
-//    NSString*querydate = [sdateFormatter stringFromDate:lastupdate];
-//    NSDate *queryDate=[sdateFormatter dateFromString:querydate];
+
     
     NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:@"groups nearby"];
     [attributeString addAttribute:NSUnderlineStyleAttributeName
@@ -48,47 +47,25 @@
     switchtap.numberOfTapsRequired=1.0;
     self.switchtotab.userInteractionEnabled=YES;
     [self.switchtotab addGestureRecognizer:switchtap];
-    mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
+    [self.view setFrame:sharedobj.myGroupViewFrame];
+    [_mygroupTableview setFrame:self.view.frame];
+    _mygroupTableview.backgroundColor=[UIColor clearColor];
     
     [self CallMyService:YES];
     
-        PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-        [query whereKey:@"MobileNo" equalTo:sharedobj.AccountNumber];
-        [query whereKey:@"CountryName" equalTo:sharedobj.AccountCountry];
-        [query fromLocalDatastore];
-        [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-            if (error) {
-                [SVProgressHUD dismiss];
-            }
-            else{
-                 PFFile *imageFile =[object objectForKey:@"ProfilePicture"];
-                [[NSUserDefaults standardUserDefaults]setObject:imageFile.url forKey:@"ProfilePicture"];
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"UserName"] forKey:@"UserName"];
-                
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"CountryName"] forKey:@"Country"];
-                
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"MobileNo"] forKey:@"MobileNo"];
-    
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"NameChangeCount"] forKey:@"NameCount"];
-                [[NSUserDefaults standardUserDefaults]setObject:object[@"GroupInvitation"] forKey:@"GroupInvite"];
-                [[NSUserDefaults standardUserDefaults]setObject:object[@"MyGroupArray"] forKey:@"MyGroup"];
-                
-            }
-            }];
-    
-  
     if([self respondsToSelector:@selector(setAutomaticallyAdjustsScrollViewInsets:)])
     {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
+    
+    
     __weak MyGroupViewController *weakSelf = self;
       BOOL internetconnect=[sharedobj connected];
     [self.mygroupTableview addPullToRefreshWithActionHandler:^{
         int64_t delayInSeconds = 0.5;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-          
-            
+        
             if (internetconnect) {
             [weakSelf.mygroupTableview beginUpdates];
             
@@ -101,17 +78,8 @@
             }
         });
     }];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(doSomething)
-                                                 name:UIApplicationDidChangeStatusBarFrameNotification
-                                               object:nil];
-    [self.view setFrame:sharedobj.myGroupViewFrame];
-    [_mygroupTableview setFrame:self.view.frame];
-    _mygroupTableview.backgroundColor=[UIColor clearColor];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(doSomething) name:@"REFRESH" object:nil];
-//    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateunreadmsg) name:@"REFRESHMYGROUP" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTableview) name:@"MYGROUPSEARCH" object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshServiceData) name:@"SERVICEREFRESH" object:nil];
+   
+
     if (sharedobj.MyGroupArray.count!=0) {
         [_mygroupTableview setHidden:NO];
         [_noresultView setHidden:YES];
@@ -124,73 +92,28 @@
         [_mygroupTableview setHidden:NO];
         [_noresultView setHidden:NO];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(doSomething)
+                                                 name:UIApplicationDidChangeStatusBarFrameNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(doSomething) name:@"REFRESH" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(reloadTableview) name:@"MYGROUPSEARCH" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshServiceData) name:@"SERVICEREFRESH" object:nil];
 
     // Do any additional setup after loading the view.
 }
-//-(void)updateMyGroup
-//{
-//    for (int i=0; i < sharedobj.MyGroupArray.count; i++) {
-//        
-//        GroupModalClass *modal=[sharedobj.MyGroupArray objectAtIndex:i];
-//
-//    PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
-//    query.limit=100;
-//    [query whereKey:@"GroupId" equalTo:modal.groupId];
-//    [query whereKey:@"PostStatus" equalTo:@"Active"];
-//    
-//    if ([modal.groupType isEqualToString:@"Public"]) {
-//        [query whereKey:@"PostType" notEqualTo:@"Member"];
-//    }
-//    
-//    // [query includeKey:@"UserName"];
-//    [query orderByDescending:@"updatedAt"];
-//        [query fromLocalDatastore];
-//    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        if (objects.count==0) {
-//            PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
-//            query1.limit=100;
-//            [query1 whereKey:@"GroupId" equalTo:modal.groupId];
-//            [query1 whereKey:@"PostStatus" equalTo:@"Active"];
-//            
-//            if ([modal.groupType isEqualToString:@"Public"]) {
-//                [query whereKey:@"PostType" notEqualTo:@"Member"];
-//            }
-//            
-//            // [query includeKey:@"UserName"];
-//            [query1 orderByDescending:@"updatedAt"];
-//            [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//                [PFObject unpinAllObjectsInBackgroundWithName:modal.groupId];
-//                [PFObject pinAllInBackground:objects withName:modal.groupId block:^(BOOL succeeded, NSError *error) {
-//                    if (succeeded) {
-//                        NSLog(@"MY GROUP Pinned OK");
-//                        
-//                        
-//                        
-//                    }else{
-//                        NSLog(@"Erro: %@", error.localizedDescription);
-//                    }
-//
-//                }];
-//            
-//            }];
-//        }
-//        
-//    }];
-//    }
-//
-//}
+
 -(void)switchtab
 {
     [[NSNotificationCenter defaultCenter]postNotificationName:@"MOVETONEARBY" object:nil];
 }
 -(void)reloadTableview
 {
-    
     [self.mygroupTableview reloadData];
 }
 -(void)doSomething
 {
-   // mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     
     [self.view setFrame:sharedobj.myGroupViewFrame];
     [_mygroupTableview setFrame:self.view.frame];
@@ -199,10 +122,9 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-  //  mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
-
-        [self.view setFrame:sharedobj.myGroupViewFrame];
-    [_mygroupTableview setFrame:self.view.frame];}
+    [self.view setFrame:sharedobj.myGroupViewFrame];
+    [_mygroupTableview setFrame:self.view.frame];
+}
 -(void)refreshServiceData
 {
     [self refreshService:NO];
@@ -221,12 +143,10 @@
     else{
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedobj.AccountNumber];
-    [query whereKey:@"CountryName" equalTo:sharedobj.AccountCountry];
-    
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+  
+   [query getObjectInBackgroundWithId:sharedobj.userId block:^(PFObject *object, NSError *error) {
+
         if (error) {
-            [SVProgressHUD dismiss];
         }
         else{
             [[NSUserDefaults standardUserDefaults]setObject:object[@"MyGroupArray"] forKey:@"MyGroup"];
@@ -244,16 +164,10 @@
                       [self CallMyService:NO];
                 }
             }];
-            
-
-          
-            
+    
         }
     }];
     }
-
-   
-  
 }
 
 -(void)updateunreadmsg
@@ -269,7 +183,6 @@
         [message whereKey:@"MemberStatus" equalTo:@"Active"];
         [message findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (error) {
-                [SVProgressHUD dismiss];
                 NSLog(@"error in geo query!"); // todo why is this ever happening?
             } else {
                 if (objects.count==0) {
@@ -328,7 +241,7 @@
 }
 -(void)CallMyService:(BOOL)update
 {
-       mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
+    mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
     [myquery whereKey:@"objectId" containedIn:mygroupIDArray];
     [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
@@ -336,7 +249,6 @@
     [myquery fromLocalDatastore];
     [myquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
-            [SVProgressHUD dismiss];
             NSLog(@"error in geo query!"); // todo why is this ever happening?
         } else {
             
@@ -348,7 +260,6 @@
                     [modal setGroupId:group.objectId];
                     [modal setGroupOwner:[group objectForKey:@"MobileNo"]];
                     [modal setGroupName:[group objectForKey:@"GroupName"]];
-                    [modal setGroupPost:[group objectForKey:@"LatestPost"]];
                     [modal setGroupType:[group objectForKey:@"GroupType"]];
                     [modal setGroupAdminArray:[group objectForKey:@"AdminArray"]];
                     [modal setGroupDescription:[group objectForKey:@"GroupDescription"]];
@@ -403,7 +314,6 @@
             {
                 
                 [sharedobj.MyGroupArray removeAllObjects];
-                [SVProgressHUD dismiss];
                 if (sharedobj.MyGroupArray.count!=0) {
 
                     [_mygroupTableview setHidden:NO];

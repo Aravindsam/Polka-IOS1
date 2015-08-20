@@ -28,7 +28,6 @@
     BOOL create;
     NSString*currentdate,*timestamp;
     NSDateHumanizedType humanizedType;
-    PFFile*userimage;
 
 }
 @property (strong, nonatomic) IBOutlet UILabel *visibilitylabel;

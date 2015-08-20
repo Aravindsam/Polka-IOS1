@@ -24,21 +24,16 @@
     [[self navigationController] setNavigationBarHidden:YES animated:YES];
     sharedObj=[Generic sharedMySingleton];
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-   // _nextbtn.backgroundColor=[Generic colorFromRGBHexString:headerColor];
     _groupnameTextfield.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0);
     next=NO;
+    
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     if(IS_OS_8_OR_LATER) {
         [locationManager requestWhenInUseAuthorization];
-        //[locationManager requestAlwaysAuthorization];
     }
     [locationManager startUpdatingLocation];
-    
-    
-    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
-    sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
     
     if (sharedObj.GroupName.length!=0) {
         _groupnameTextfield.text=sharedObj.GroupName;
@@ -46,7 +41,7 @@
     if (sharedObj.groupdescription.length!=0) {
         _aboutTextview.text=sharedObj.groupdescription;
     }
-      NSUInteger DataLength=[sharedObj.groupimageData length];
+    NSUInteger DataLength=[sharedObj.groupimageData length];
     if (DataLength!=0) {
         
         groupImageview.hidden=YES;
@@ -64,11 +59,11 @@
     
     
     groupDescription=[[NSString alloc]init];
- 
+    imagePicker = [[UIImagePickerController alloc] init];
+
     [_backgroundImageView setUserInteractionEnabled:YES];
     
-    _headerview.layer.borderColor=[UIColor lightGrayColor].CGColor;
-    _headerview.layer.borderWidth=0.5;
+  
     
     _groupnameTextfield.layer.borderWidth=0.5;
     _groupnameTextfield.layer.borderColor=[UIColor lightGrayColor].CGColor;
@@ -86,7 +81,6 @@
     UITapGestureRecognizer *tapgestur=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(chooseImage)];
     tapgestur.numberOfTapsRequired=1;
     [_backgroundImageView addGestureRecognizer:tapgestur];
-    imagePicker = [[UIImagePickerController alloc] init];
     // Do any additional setup after loading the view.
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -131,9 +125,6 @@
     double londouble = [lon doubleValue];
     CLLocationCoordinate2D coord = {latdouble,londouble};
     
-    
-    
-    
     if (currentLocation != nil) {
         point = [PFGeoPoint geoPointWithLatitude:coord.latitude longitude:coord.longitude];
         
@@ -141,10 +132,7 @@
     NSLog(@"Resolving the Address");
     [locationManager stopUpdatingLocation];
 }
--(void)getGroupinLocation
-{
-    
-}
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -279,7 +267,6 @@
 - (void)cropViewController:(PECropViewController *)controller didFinishCroppingImage:(UIImage *)croppedImage transform:(CGAffineTransform)transform cropRect:(CGRect)cropRect
 {
     groupImageData=[self compressImage:croppedImage];
-
      groupImageview.hidden=YES;
     _backgroundImageView.image=croppedImage;
     _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -408,10 +395,16 @@
     
     sharedObj.groupimageData=nil;
     sharedObj.aboutGroup=nil;
+    sharedObj.groupdescription=nil;
     sharedObj.groupLocation=nil;
-    sharedObj.radiusVisibilityVal=0;
+    sharedObj.radiusVisibilityVal=50;
+    sharedObj.openEntryVal=0;
     sharedObj.GroupName=nil;
-    
+    sharedObj.inviteNo=nil;
+    sharedObj.otherText=nil;
+    sharedObj.AdditionalInfotext=nil;
+    sharedObj.MemberApproval=NO;
+
     [[self navigationController]popViewControllerAnimated:YES];
 }
 - (IBAction)nextbtnClicked:(id)sender {
@@ -425,6 +418,18 @@
     groupname=[groupname capitalizedString];
     groupname=[groupname stringByTrimmingCharactersInSet:
                [NSCharacterSet whitespaceCharacterSet]];
+    
+    if (_backgroundImageView.image==nil) {
+        next=NO;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
+                                                        message:@"Please upload a group image"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+        
+    }
     if (groupname == NULL || groupname.length ==0) {
         next=NO;
         [self showAlert:@"Please enter group name"];
@@ -445,17 +450,7 @@
         [alert show];
         return;
     }
-    if (_backgroundImageView.image==nil) {
-         next=NO;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please upload a group image"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
-        return;
-        
-    }
+    
     PFQuery *query = [PFQuery queryWithClassName:@"Group"];
     [query whereKey:@"GroupName" equalTo:groupname];
     [query whereKey:@"GroupLocation" nearGeoPoint:point withinMiles:0.310686];
@@ -464,8 +459,6 @@
         if (error) {
         }
         else{
-            
-            
             if (objects.count!=0) {
                  next=NO;
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""

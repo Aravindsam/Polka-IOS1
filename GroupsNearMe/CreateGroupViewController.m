@@ -77,21 +77,21 @@
         cell.selectimageview.image=[UIImage imageNamed:@"unselected.png"];
     }
     
-    if (indexPath.row==0) {
-        cell.grouptypeimageview.frame=CGRectMake(0,8, 48, 48);
+   if (indexPath.row==0) {
+        cell.grouptypeimageview.frame=CGRectMake(0,15, 50,50);
 
     }
     else if (indexPath.row==1)
     {
-        cell.grouptypeimageview.frame=CGRectMake(0, 8, 48, 37);
+        cell.grouptypeimageview.frame=CGRectMake(0, 15, 50,40);
 
     }
     else if (indexPath.row==2)
     {
-        cell.grouptypeimageview.frame=CGRectMake(0, 8, 48, 37);
-
+        cell.grouptypeimageview.frame=CGRectMake(0, 15, 50, 40);
+//
     }
-    
+    cell.selectimageview.alpha=0.6;
     
     UIImageView* separatorLineView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 99.5, 320, 0.5)];/// change size as you need.
     separatorLineView.image=[UIImage imageNamed:@"line.png"];
@@ -104,12 +104,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-   
-    
-  
     selectedIndex=(int)indexPath.row;
-    
-   
     [_createtableView reloadData];
 }
 
@@ -152,8 +147,7 @@
     sharedObj.inviteNo=nil;
     sharedObj.otherText=nil;
     sharedObj.AdditionalInfotext=nil;
-    sharedObj.greenchannelArray=nil;
-    sharedObj.selectedIdArray=nil;
+   
      UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     if (selectedIndex==0) {
         OpenGroup1ViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"OpenGroup1ViewController"];

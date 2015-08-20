@@ -86,7 +86,7 @@
     }];
 
     _grouptitleLabel.text=sharedObj.GroupName;
-    [_grouptitleLabel sizeToFit];
+    //[_grouptitleLabel sizeToFit];
     _groupinfotableview.separatorStyle=UITableViewCellSeparatorStyleNone;
     _groupinfotableview.backgroundColor=[UIColor whiteColor];
 
@@ -140,7 +140,7 @@
     }
 
     _grouptitleLabel.text=sharedObj.GroupName;
-       [_grouptitleLabel sizeToFit];
+     //  [_grouptitleLabel sizeToFit];
     _groupImageview.file=sharedObj.groupimageurl;
     [_groupImageview loadInBackground];
 }
@@ -815,7 +815,6 @@
                     
                 }
                  [[NSNotificationCenter defaultCenter]postNotificationName:@"REFRESH" object:nil];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"setdefault" object:nil];
                 
 //            }
 //        }

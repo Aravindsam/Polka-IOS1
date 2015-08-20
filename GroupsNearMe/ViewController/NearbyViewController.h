@@ -29,7 +29,7 @@
     CLLocationDistance distancefromgroup;
     CLLocation *grouplocation,*userlocation;
     BOOL joinClicked;
-    PFFile*userimage;
+
     NSString*currentdate;
     NSDateHumanizedType humanizedType;
 

@@ -35,28 +35,35 @@
 @synthesize thesearchBar;
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     sharedObj=[Generic sharedMySingleton];
     humanizedType = NSDateHumanizedSuffixAgo;
-
+    thesearchBar.frame=CGRectMake(51, 4.5, 260, 35);
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
     _searchView.backgroundColor=[Generic colorFromRGBHexString:headerColor];
     _notificationView.hidden=YES;
+    
     mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
-    sharedObj.AccountName=[[NSUserDefaults standardUserDefaults]objectForKey:@"UserName"];
-    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
-       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     sharedObj.profileImage=[[NSUserDefaults standardUserDefaults]objectForKey:@"ProfilePicture"];
-    sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
+
     currentdate=[[NSString alloc]init];
     thesearchBar.layer.cornerRadius=5.0;
     thesearchBar.clipsToBounds=YES;
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    tempnearbyArray=[[NSMutableArray alloc]init];
+    resultArray=[[NSMutableArray alloc]init];
     
+    if([self respondsToSelector:@selector(setAutomaticallyAdjustsScrollViewInsets:)])
+    {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
+    
+    //Customise UiTabbar
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     profileViewController = [storyboard instantiateViewControllerWithIdentifier:@"NearbyViewController"];
     [sharedObj setNearByViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
     profileViewController.view.frame=CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height);
-    
-    
     
     postViewController = [storyboard instantiateViewControllerWithIdentifier:@"MyGroupViewController"];
     [sharedObj setMyGroupViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
@@ -65,66 +72,41 @@
     
     NSArray *array = [[NSArray alloc] initWithObjects:profileViewController, postViewController ,nil];
     self.viewControllers = array;
+    
+    _searchView.hidden=YES;
+    _headerview.hidden=NO;
+    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
+                                               NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
+                                               } forState:UIControlStateNormal];
+    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
+                                               NSForegroundColorAttributeName : [UIColor whiteColor]
+                                               } forState:UIControlStateSelected];
+    nearbyTabBarItem.tag=11;
+    mygroupTabBarItem.tag=22;
+    
+    
+    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
+                                                NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
+                                                } forState:UIControlStateNormal];
+    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
+                                                NSForegroundColorAttributeName : [UIColor whiteColor]
+                                                } forState:UIControlStateSelected];
+    
+    
+    mygroupTabBarItem.selectedImage=[[UIImage imageNamed:@"selected-right.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    mygroupTabBarItem.image=[[UIImage imageNamed:@"unselectedtab.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    mygroupTabBarItem.imageInsets=UIEdgeInsetsMake(6, 0, -6, 0);
+    nearbyTabBarItem.imageInsets=UIEdgeInsetsMake(6, 0, -6, 0);
+    nearbyTabBarItem.selectedImage=[[UIImage imageNamed:@"selected-left.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    nearbyTabBarItem.image=[[UIImage imageNamed:@"unselectedtab.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    self.tabBar.layer.borderWidth = 1.0;
+    self.tabBar.layer.borderColor =[Generic colorFromRGBHexString:headerColor].CGColor;
+    self.tabBar.clipsToBounds=YES;
 
+    
     BOOL internetconnect=[sharedObj connected];
     
-    if (!internetconnect) {
-//        [self.view makeToast:@"No Internet Connection" duration:3.0 position:@"bottom"];
-        PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-        [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-        [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-        [query fromLocalDatastore];
-        [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-            if (error) {
-            }
-            else{
-                PFFile *imageFile =[object objectForKey:@"ProfilePicture"];
-                [[NSUserDefaults standardUserDefaults]setObject:imageFile.url forKey:@"ProfilePicture"];
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"UserName"] forKey:@"UserName"];
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"CountryName"] forKey:@"Country"];
-                [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"MobileNo"] forKey:@"MobileNo"];
-                [[NSUserDefaults standardUserDefaults]setObject:object[@"Badgepoint"] forKey:@"BadgePoint"];
-                [[NSUserDefaults standardUserDefaults]setObject:object[@"GroupInvitation"] forKey:@"GroupInvite"];
-                [[NSUserDefaults standardUserDefaults]setObject:object[@"MyGroupArray"] forKey:@"MyGroup"];
-                
-            }
-            if (sharedObj.NearByGroupArray.count==0) {
-                [self.tabview addSubview:postViewController.view];
-                self.selectedViewController = postViewController;
-                tabBar.selectedItem = mygroupTabBarItem;
-            }
-            else
-            {
-                [self.tabview addSubview:profileViewController.view];
-                self.selectedViewController = profileViewController;
-                tabBar.selectedItem = nearbyTabBarItem;
-            }
-            
-
-        }];
-
-        
-    }
-    else{
-        
-        if (sharedObj.newUser) {
-            [self.tabview addSubview:profileViewController.view];
-            self.selectedViewController = profileViewController;
-            tabBar.selectedItem = nearbyTabBarItem;
-        }
-        else{
-        if (sharedObj.NearByGroupArray.count==0) {
-            [self.tabview addSubview:postViewController.view];
-            self.selectedViewController = postViewController;
-            tabBar.selectedItem = mygroupTabBarItem;
-        }
-        else
-        {
-            [self.tabview addSubview:profileViewController.view];
-            self.selectedViewController = profileViewController;
-            tabBar.selectedItem = nearbyTabBarItem;
-        }
-        }
+    if (internetconnect) {
 
         PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
         [myquery whereKey:@"objectId" containedIn:mygroupIDArray];
@@ -142,74 +124,49 @@
        
     }
   
-    tempnearbyArray=[[NSMutableArray alloc]init];
-    resultArray=[[NSMutableArray alloc]init];
-    if([self respondsToSelector:@selector(setAutomaticallyAdjustsScrollViewInsets:)])
-    {
-        self.automaticallyAdjustsScrollViewInsets = NO;
+    if (sharedObj.newUser) {
+        [self.tabview addSubview:profileViewController.view];
+        self.selectedViewController = profileViewController;
+        tabBar.selectedItem = nearbyTabBarItem;
     }
+    else{
+        if (sharedObj.NearByGroupArray.count==0) {
+            [self.tabview addSubview:postViewController.view];
+            self.selectedViewController = postViewController;
+            tabBar.selectedItem = mygroupTabBarItem;
+        }
+        else
+        {
+            [self.tabview addSubview:profileViewController.view];
+            self.selectedViewController = profileViewController;
+            tabBar.selectedItem = nearbyTabBarItem;
+        }
+    }
+  
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(doSomething)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
                                                object:nil];
     
-   
-
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(movetonearby) name:@"MOVETONEARBY" object:nil];
- 
-    _searchView.hidden=YES;
-     _headerview.hidden=NO;
-    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
-                                                        NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
-                                                        } forState:UIControlStateNormal];
-    [nearbyTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
-                                                        NSForegroundColorAttributeName : [UIColor whiteColor]
-                                                        } forState:UIControlStateSelected];
-    nearbyTabBarItem.tag=11;
-    mygroupTabBarItem.tag=22;
 
-    
-    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Lato-Medium" size:14.0],
-                                               NSForegroundColorAttributeName : [Generic colorFromRGBHexString:@"#A4D7FA"]
-                                               } forState:UIControlStateNormal];
-    [mygroupTabBarItem setTitleTextAttributes:@{NSFontAttributeName :[UIFont fontWithName:@"Lato-Medium" size:14.0],
-                                               NSForegroundColorAttributeName : [UIColor whiteColor]
-                                               } forState:UIControlStateSelected];
-    
-    
-    mygroupTabBarItem.selectedImage=[[UIImage imageNamed:@"selected-right.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    mygroupTabBarItem.image=[[UIImage imageNamed:@"unselectedtab.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    mygroupTabBarItem.imageInsets=UIEdgeInsetsMake(6, 0, -6, 0);
-      nearbyTabBarItem.imageInsets=UIEdgeInsetsMake(6, 0, -6, 0);
-    nearbyTabBarItem.selectedImage=[[UIImage imageNamed:@"selected-left.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    nearbyTabBarItem.image=[[UIImage imageNamed:@"unselectedtab.png"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-// tabBar.layer.borderWidth = 0.0;
-//   tabBar.layer.borderColor =[UIColor clearColor].CGColor;
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(movetoMy) name:@"setdefault" object:nil];
-    self.tabBar.layer.borderWidth = 1.0;
-    self.tabBar.layer.borderColor =[Generic colorFromRGBHexString:headerColor].CGColor;
-    self.tabBar.clipsToBounds=YES;
+ 
 
 }
 -(void)CallMyService
 {
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *object, NSError *error) {
+  
         if (error) {
         }
         else{
-              [PFObject unpinAllObjectsInBackgroundWithName:@"USERDETAILS"];
+            [PFObject unpinAllObjectsInBackgroundWithName:@"USERDETAILS"];
             [object pinInBackgroundWithName:@"USERDETAILS"];
             PFFile *imageFile =[object objectForKey:@"ProfilePicture"];
             [[NSUserDefaults standardUserDefaults]setObject:imageFile.url forKey:@"ProfilePicture"];
-            [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"UserName"] forKey:@"UserName"];
-            [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"CountryName"] forKey:@"Country"];
-            [[NSUserDefaults standardUserDefaults]setObject:[object objectForKey:@"MobileNo"] forKey:@"MobileNo"];
-            [[NSUserDefaults standardUserDefaults]setObject:object[@"Badgepoint"] forKey:@"BadgePoint"];
             [[NSUserDefaults standardUserDefaults]setObject:object[@"GroupInvitation"] forKey:@"GroupInvite"];
             [[NSUserDefaults standardUserDefaults]setObject:object[@"MyGroupArray"] forKey:@"MyGroup"];
             
@@ -232,7 +189,7 @@
 {
     [super viewWillAppear:animated];
 
-       [sharedObj setNearByViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
+    [sharedObj setNearByViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
     [sharedObj setMyGroupViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"REFRESH" object:nil];
 

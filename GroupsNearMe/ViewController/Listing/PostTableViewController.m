@@ -359,7 +359,7 @@
 }
 -(void)comment:(int)index4
 {
-
+ [SVProgressHUD dismiss];
      sharedObj.feedObject=[self.objects objectAtIndex:index4];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     CommentViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
@@ -776,7 +776,7 @@
                 {
                     if (result == SLComposeViewControllerResultDone)
                     {
-                        [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
+                        [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                     }
                     
                 
@@ -808,7 +808,8 @@
              {
                  if (result == SLComposeViewControllerResultDone)
                  {
-                    [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
+                  
+                      [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                  }
                      
                  
@@ -833,15 +834,12 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+       
+         [self.view makeToast:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." duration:3.0 position:@"bottom"];
     }
 
 }
--(void)showAlertWithMessage:(NSString *)message Title:(NSString *)title
-{
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [alert show];
-}
+
 -(void)twitterShareSelected:(NSString*)ImageData
 {
     if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
@@ -858,7 +856,8 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
+                    
+                      [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
@@ -894,7 +893,7 @@
                  {
                      case SLComposeViewControllerResultDone:
                          
-                         [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
+                          [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                          break;
                          
                      case SLComposeViewControllerResultCancelled:
@@ -916,7 +915,9 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+        
+        
+         [self.view makeToast:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings" duration:3.0 position:@"bottom"];
     }
 }
 
@@ -955,7 +956,8 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+          
+             [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
         }
         else
         {
@@ -999,15 +1001,9 @@
                     }
                     else
                     {
-                         [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+                        
+                         [self.view makeToast:@"You must configure WhatsApp account for sharing." duration:3.0 position:@"bottom"];
                     }
-//                     [WhatsAppKit launchWhatsAppWithMessage:[NSString stringWithFormat:@"%@ Via Iphone %@",sharefeed[@"ImageCaption"],[NSURL URLWithString:imageUrl]]];
-//                }
-//                else
-//                {
-//                    [WhatsAppKit launchWhatsAppWithMessage:[NSString stringWithFormat:@"%@ Via Iphone",[NSURL URLWithString:imageUrl]]];
-//                }
-            
             
         }
         
@@ -1015,7 +1011,8 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
+        
+        [self.view makeToast:@"WhatsApp Feature is not applicable" duration:3.0 position:@"bottom"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {
@@ -1583,6 +1580,7 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath  {
     // call super because we're a custom subclass.
+     [SVProgressHUD dismiss];
      if (indexPath.row < self.objects.count) {
          sharedObj.feedObject=[self.objects objectAtIndex:indexPath.row];
          
@@ -1652,9 +1650,9 @@
 //            float newHeight = heightimg / factor;
             
             double aspectratio=(double)heightimg/widthimg;
-             double difference=aspectratio*(self.tableView.frame.size.width-40);
-            if(aspectratio >1.0)
-            {
+             double difference=aspectratio*(self.tableView.frame.size.width-20);
+//            if(aspectratio >1.0)
+//            {
                 if (animal == NULL || animal.length ==0)
                 {
 
@@ -1665,34 +1663,34 @@
                     tableHeight= 195+difference;
 
                 }
-            }
-            else if(aspectratio==1)
-            {
-                if (animal == NULL || animal.length ==0)
-                {
-                tableHeight= 145+280;
-                }
-                else
-                {
-                    tableHeight= 195+280;
-
-                    
-                }
-            }
-            else
-            {
-                if (animal == NULL || animal.length ==0)
-                {
-                    tableHeight= 145+240;
-                }
-                else
-                {
-                    tableHeight= 195+240;
-                    
-                    
-                }
-                
-            }
+//            }
+//            else if(aspectratio==1)
+//            {
+//                if (animal == NULL || animal.length ==0)
+//                {
+//                tableHeight= 145+280;
+//                }
+//                else
+//                {
+//                    tableHeight= 195+280;
+//
+//                    
+//                }
+//            }
+//            else
+//            {
+//                if (animal == NULL || animal.length ==0)
+//                {
+//                    tableHeight= 145+240;
+//                }
+//                else
+//                {
+//                    tableHeight= 195+240;
+//                    
+//                    
+//                }
+//                
+//            }
 
                     }
         else if ([object[@"PostType"] isEqualToString:@"Invitation"])
@@ -2249,12 +2247,8 @@
                 }
                 else
                 {
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invitation Approval"
-                                                                        message:@"You are not authorised to accept the invitation"
-                                                                       delegate:nil
-                                                              cancelButtonTitle:nil
-                                                              otherButtonTitles:@"Ok", nil];
-                    [alertView show];
+                    
+                     [self.view makeToast:@"You are not authorised to accept the invitation" duration:3.0 position:@"bottom"];
                     return;
                 }
             }
@@ -2587,12 +2581,9 @@
                 
                 else
                 {
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invitation Approval"
-                                                                        message:@"You are not authorised to reject the invitation"
-                                                                       delegate:nil
-                                                              cancelButtonTitle:nil
-                                                              otherButtonTitles:@"Ok", nil];
-                    [alertView show];
+                   
+                    
+                     [self.view makeToast:@"You are not authorised to reject the invitation" duration:3.0 position:@"bottom"];
                     return;
                 }
             }

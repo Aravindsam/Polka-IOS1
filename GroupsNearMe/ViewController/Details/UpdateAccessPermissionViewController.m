@@ -264,12 +264,8 @@
         sharedObj.secretCode=@"";
         if (sharedObj.addinfo.length==0) {
             [SVProgressHUD dismiss];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                            message:@"Enter question or information you seek from new users that apply to join this group "
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+          
+             [self.view makeToast:@"Enter question or information you seek from new users that apply to join this group" duration:3.0 position:@"bottom"];
             return;
         }
 
@@ -284,12 +280,8 @@
                            [NSCharacterSet whitespaceCharacterSet]];
         if (sharedObj.secretCode.length==0) {
              [SVProgressHUD dismiss];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                            message:@"Enter the passcode to join this group "
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+          
+             [self.view makeToast:@"Enter the passcode to join this group" duration:3.0 position:@"bottom"];
             return;
         }
 

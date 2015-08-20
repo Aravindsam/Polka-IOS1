@@ -23,14 +23,18 @@
     description=[[NSString alloc]init];
     category=[[NSString alloc]init];
     mobileno=[[NSString alloc]init];
-       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    
+    sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
+    
     categoryArray=[[NSMutableArray alloc]initWithObjects:@"Give us feedback",@"Request a feature",@"Contact us with your question", nil];
     _categorylbl.text=@" Give us feedback";
+    
     singletap=[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(showcountry:)];
     singletap.numberOfTapsRequired=1;
     _categorylbl.userInteractionEnabled=YES;
     [_categorylbl addGestureRecognizer:singletap];
+    
     _categoryTableView.hidden=YES;
     _backgroundlbl.layer.borderColor=[UIColor lightGrayColor].CGColor;
     _backgroundlbl.layer.borderWidth=0.5;
@@ -133,11 +137,8 @@
 */
 
 - (IBAction)menu:(id)sender {
-//    [[NSNotificationCenter defaultCenter]postNotificationName:@"UPDATE PROFILE" object:nil];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"CALLHOME" object:nil];
-//    [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
-//        
-//    }];
+
 }
 - (IBAction)contactUsbtn:(id)sender {
     BOOL internetconnect=[sharedObj connected];

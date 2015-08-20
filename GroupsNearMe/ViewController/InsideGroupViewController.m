@@ -11,6 +11,7 @@
 #import "PhotoViewController.h"
 #import "GroupInfoViewController.h"
 #import <ImageIO/ImageIO.h>
+#import "SVProgressHUD.h"
 @interface InsideGroupViewController ()
 
 @end
@@ -223,7 +224,7 @@
     {
         tap=YES;
     }
-    
+     [SVProgressHUD dismiss];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"DISMISSFLAG" object:nil];
     [[NSNotificationCenter defaultCenter]postNotificationName:@"DISMISSMENU" object:nil];
    
@@ -266,11 +267,11 @@
     if (tap) {
         return;    }
     
-   
+    [SVProgressHUD dismiss];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"DISMISSFLAG" object:nil];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"DISMISSMENU" object:nil];
         sharedObj.search=NO;
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"SERVICEREFRESH" object:nil];
+       [[NSNotificationCenter defaultCenter]postNotificationName:@"SERVICEREFRESH" object:nil];
         if (sharedObj.frommygroup) {
             [[self navigationController]popViewControllerAnimated:YES];
             [[NSNotificationCenter defaultCenter]postNotificationName:@"MYGROUPSEARCH" object:nil];
@@ -279,8 +280,10 @@
         else{
             
             [[NSNotificationCenter defaultCenter]postNotificationName:@"CALLHOME" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"setdefault" object:nil];
+
         }
-        
+    
 
    
     

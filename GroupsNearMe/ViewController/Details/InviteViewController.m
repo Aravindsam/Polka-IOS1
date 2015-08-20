@@ -229,23 +229,27 @@
                  [NSCharacterSet whitespaceCharacterSet]];
     
     if (countryname == NULL || countryname.length ==0) {
-        [self showAlert:@"Not Available"];
+        //[self showAlert:@"Not Available"];
+        [self.view makeToast:@"Not Available" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
     if (![CountryArray containsObject:countryname]) {
-        [self showAlert:@"Please Choose the available Country Code"];
+        //[self showAlert:@"Please Choose the available Country Code"];
+         [self.view makeToast:@"Please Choose the available Country Code" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
     if (mobileno == NULL || mobileno.length ==0) {
-        [self showAlert:@"Please enter a valid number"];
+       // [self showAlert:@"Please enter a valid number"];
+         [self.view makeToast:@"Please enter a valid number" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
     else if (mobileno.length<10)
     {
-        [self showAlert:@"Please enter a valid mobile number"];
+        //[self showAlert:@"Please enter a valid mobile number"];
+         [self.view makeToast:@"Please enter a valid mobile number" duration:3.0 position:@"bottom"];
         [_mobileTextField becomeFirstResponder];
         return ;
     }
@@ -269,14 +273,7 @@
 
     }
 }
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 
 - (IBAction)invite:(id)sender {
     if (!_countrytableview.hidden) {
@@ -294,23 +291,27 @@
                      [NSCharacterSet whitespaceCharacterSet]];
         
         if (countryname == NULL || countryname.length ==0) {
-            [self showAlert:@"Not Available"];
+           // [self showAlert:@"Not Available"];
+            [self.view makeToast:@"Not Available" duration:3.0 position:@"bottom"];
             [_mobileTextField becomeFirstResponder];
             return ;
         }
         if (![CountryArray containsObject:countryname]) {
-            [self showAlert:@"Please Choose the available Country Code"];
+           // [self showAlert:@"Please Choose the available Country Code"];
+            [self.view makeToast:@"Please Choose the available Country Code" duration:3.0 position:@"bottom"];
             [_mobileTextField becomeFirstResponder];
             return ;
         }
         if (mobileno == NULL || mobileno.length ==0) {
-            [self showAlert:@"Please enter a valid number"];
+           // [self showAlert:@"Please enter a valid number"];
+            [self.view makeToast:@"Please enter a valid number" duration:3.0 position:@"bottom"];
             [_mobileTextField becomeFirstResponder];
             return ;
         }
         else if (mobileno.length<10)
         {
-            [self showAlert:@"Please enter a valid mobile number"];
+           // [self showAlert:@"Please enter a valid mobile number"];
+            [self.view makeToast:@"Please enter a valid mobile number" duration:3.0 position:@"bottom"];
             [_mobileTextField becomeFirstResponder];
             return ;
         }

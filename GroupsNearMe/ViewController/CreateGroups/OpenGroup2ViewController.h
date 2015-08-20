@@ -29,7 +29,7 @@
     BOOL create;
     NSString*currentdate;
     NSString *timestamp;
-    PFFile*groupimgurl,*userimage;
+    PFFile*groupimgurl;
     NSDateHumanizedType humanizedType;
 
     

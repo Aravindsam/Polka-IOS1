@@ -10,6 +10,7 @@
 #import "Generic.h"
 #import <Parse/Parse.h>
 #import <CoreLocation/CoreLocation.h>
+#import "SVProgressHUD.h"
 @class ASIHTTPRequest;
 @interface InviteViewController : UIViewController<CLLocationManagerDelegate>
 {

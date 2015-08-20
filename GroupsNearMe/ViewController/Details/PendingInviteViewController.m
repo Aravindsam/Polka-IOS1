@@ -11,6 +11,7 @@
 #import "SVPullToRefresh.h"
 #import "InvitesTableViewCell.h"
 #import "Toast+UIView.h"
+#import "SVProgressHUD.h"
 #define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
 @interface PendingInviteViewController ()
@@ -22,11 +23,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     sharedObj=[Generic sharedMySingleton];
-       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
-    humanizedType = NSDateHumanizedSuffixAgo;
     sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
-
+    humanizedType = NSDateHumanizedSuffixAgo;
     _headerView.backgroundColor=[Generic colorFromRGBHexString:headerColor];
+    
     currentdate=[[NSString alloc]init];
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
@@ -42,28 +42,19 @@
      groupMembers=[[NSMutableArray alloc]init];
     invitesIdArray=[[NSMutableArray alloc]init];
     ownerGroup=[[NSMutableArray alloc]init];
+    
     sharedObj.AccountName=[[NSUserDefaults standardUserDefaults]objectForKey:@"UserName"];
     sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
     sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
-      self.invitationtableview.separatorColor = [UIColor clearColor];
+    self.invitationtableview.separatorColor = [UIColor clearColor];
     _invitationtableview.backgroundColor=[UIColor clearColor];
-    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query fromLocalDatastore];
-    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (error) {
-        }
-        else{
-            userimage =[object objectForKey:@"ThumbnailPicture"];
-        }}];
+ 
+    
     [ownerGroup removeAllObjects];
     PFQuery *query1 = [PFQuery queryWithClassName:@"Group"];
     [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    
     [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        
         if (!error) {
             if (objects.count!=0) {
                 for (PFObject*owner in objects) {
@@ -73,6 +64,7 @@
         }
         
     }];
+    
     [_invitationtableview setHidden:YES];
     [_noresultView setHidden:YES];
     // Do any additional setup after loading the view.
@@ -87,13 +79,13 @@
         
     }
     else{
-   
-    
+        [SVProgressHUD show];
+    [invitesIdArray removeAllObjects];
     PFQuery *invitesquery=[PFQuery queryWithClassName:@"Invitation"];
     [invitesquery whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
     [invitesquery whereKey:@"InvitationStatus" equalTo:@"Active"];
     [invitesquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-         [invitesIdArray removeAllObjects];
+       
         for (PFObject*inviteobj in objects) {
             [invitesIdArray addObject:inviteobj[@"GroupId"]];
         }
@@ -103,8 +95,8 @@
         }
         else
         {
+            [SVProgressHUD dismiss];
             [sharedObj.MyinvitesArray removeAllObjects];
-            // [SVProgressHUD dismiss];
             if (sharedObj.MyinvitesArray.count!=0) {
                 [_invitationtableview setHidden:NO];
                 [_noresultView setHidden:YES];
@@ -118,9 +110,7 @@
             
             
         }
-        
 
-        
     }];
     }
 
@@ -167,7 +157,6 @@
                      [modal setGroupAdminArray:[group objectForKey:@"AdminArray"]];
                     [modal setGroupOwner:[group objectForKey:@"MobileNo"]];
                     [modal setGroupName:[group objectForKey:@"GroupName"]];
-                    [modal setGroupPost:[group objectForKey:@"LatestPost"]];
                     [modal setGroupType:[group objectForKey:@"GroupType"]];
                     [modal setGroupDescription:[group objectForKey:@"GroupDescription"]];
                     [modal setMemberCount:[[group objectForKey:@"MemberCount"]intValue]];
@@ -191,6 +180,7 @@
                     
                     [self.invitationtableview.pullToRefreshView setLastUpdatedDate:[us objectForKey:@"LASTUPDATED"]];
                 }
+             
                 if (sharedObj.MyinvitesArray.count!=0) {
                     [_invitationtableview setHidden:NO];
                     [_noresultView setHidden:YES];
@@ -202,14 +192,13 @@
                     [_noresultView setHidden:NO];
                 }
                 
-                
+                   [SVProgressHUD dismiss];
                 
             }
             else
-            {
+            {[SVProgressHUD dismiss];
                 
                 [sharedObj.MyinvitesArray removeAllObjects];
-               // [SVProgressHUD dismiss];
                 if (sharedObj.MyinvitesArray.count!=0) {
                     [_invitationtableview setHidden:NO];
                     [_noresultView setHidden:YES];
@@ -290,27 +279,18 @@
     GroupModalClass *modal;
     indexval=index;
     modal = [sharedObj.MyinvitesArray objectAtIndex:index];
-    
-
-   
     myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     unquieArray=[NSMutableArray arrayWithArray:myGroupIdArray];
     [unquieArray removeObjectsInArray:ownerGroup];
     
-    
-    
-    
+    [SVProgressHUD show];
     PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-    [query whereKey:@"objectId" equalTo:modal.groupId];
-    
-    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
+    [query getObjectInBackgroundWithId:modal.groupId block:^(PFObject *userStats, NSError *error) {
         if (error) {
             NSLog(@"Data not available insert userdetails");
-           
-            
-            
+            [SVProgressHUD dismiss];
+  
         } else {
-           
             groupMembers=userStats[@"GroupMembers"];
             PFGeoPoint *grouploc=[userStats objectForKey:@"GroupLocation"];
             grouplocation=[[CLLocation alloc]initWithLatitude:grouploc.latitude longitude:grouploc.longitude];
@@ -322,16 +302,15 @@
                 [invite whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
                 [invite whereKey:@"GroupId" equalTo:modal.groupId];
                 [invite getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+                object[@"InvitationStatus"]=@"InActive";
+                [object saveInBackground];
                     
-                    object[@"InvitationStatus"]=@"InActive";
-                    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (succeeded) {
-                            
+                           [invitesIdArray removeAllObjects];
                             PFQuery *invitesquery=[PFQuery queryWithClassName:@"Invitation"];
                             [invitesquery whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
                             [invitesquery whereKey:@"InvitationStatus" equalTo:@"Active"];
                             [invitesquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                                [invitesIdArray removeAllObjects];
+                               
                                 for (PFObject*inviteobj in objects) {
                                     [invitesIdArray addObject:inviteobj[@"GroupId"]];
                                 }
@@ -342,7 +321,7 @@
                                 else
                                 {
                                     [sharedObj.MyinvitesArray removeAllObjects];
-                                    // [SVProgressHUD dismiss];
+                                     [SVProgressHUD dismiss];
                                     if (sharedObj.MyinvitesArray.count!=0) {
                                         [_invitationtableview setHidden:NO];
                                         [_noresultView setHidden:YES];
@@ -364,44 +343,92 @@
                             }];
                             
                             
-                        }
-                    }];
                 }];
+                
             }
             else
             {
                 
                 
                 if (distancefromgroup <= 500) {
-                
-                
                 PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
                 member[@"GroupId"]=modal.groupId;
                 member[@"MemberNo"]=sharedObj.AccountNumber;
                 member[@"JoinedDate"]=[NSDate date];
                 member[@"AdditionalInfoProvided"]=@"";
                 member[@"GroupAdmin"]=[NSNumber numberWithBool:NO];
-                member[@"MemberImage"]=userimage;
-                member[@"MemberName"]=sharedObj.AccountName;
-                 member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
+                member[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];
                 member[@"ExitGroup"]=[NSNumber numberWithBool:NO];
                 member[@"LeaveDate"]=[NSDate date];
                 member[@"MemberStatus"]=@"Active";
                 member[@"ExitedBy"]=@"";
-                    PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
+                PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
                     
-                    member[@"UserId"]=pointer;
-                [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
+                member[@"UserId"]=pointer;
+                [member saveInBackground];
                 
                 
-                 [userStats incrementKey:@"MemberCount" byAmount:[NSNumber numberWithInt:1]];
-            [groupMembers addObject:sharedObj.AccountNumber];
-            userStats[@"GroupMembers"]=groupMembers;
+              [userStats incrementKey:@"MemberCount" byAmount:[NSNumber numberWithInt:1]];
+              [groupMembers addObject:sharedObj.AccountNumber];
+              userStats[@"GroupMembers"]=groupMembers;
+              [userStats saveInBackground];
+              
             
-           
-            [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (!error) {
+                    
+                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
+                    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *object, NSError *error) {
+                        if (error) {
+                            NSLog(@"Data not available insert userdetails");
+                            
+                            
+                        } else {
+                            if (unquieArray.count==0) {
+                                [object incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
+                            }
+                            else{
+                                [object incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:100]];
+                            }
+                            mygroup=object[@"MyGroupArray"];
+                            [mygroup addObject:modal.groupId];
+                            object[@"MyGroupArray"]=mygroup;
+                             [self CallMyService];
+                            [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
+                            object[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                            object[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                            [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                if (!error) {
+                                    PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
+                                    testObject[@"PostStatus"]=@"Active";
+                                    
+                                    testObject[@"GroupId"]=modal.groupId;
+                                    testObject[@"MobileNo"]=sharedObj.AccountNumber;
+                                    testObject[@"PostType"]=@"Member";
+                                    testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",sharedObj.AccountName];
+                                    testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
+                                    testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
+                                    testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
+                                    testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
+                                    testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
+                                    testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
+                                    testObject[@"FeedLocation"]=point;
+                                    PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
+                                    testObject[@"UserId"]=pointer;
+                                    testObject[@"FeedupdatedAt"]=[NSDate date];
+                                    [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                        
+                                      
+                                    }];
+                                    
+                                   
+                                   
+                                    
+                                    
+                                }
+                            }];
+                            
+                        }
+                    }];
+                    
                     
                     NSString*countstring=[NSString stringWithFormat:@"%@",userStats[@"MemberCount"]];
                     if ([countstring isEqualToString:@"20"]) {
@@ -410,14 +437,14 @@
                         
                         [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                             for (PFObject *userStats in objects) {
-                            
+                                
                                 [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
                                 userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
                                 userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
                                 [userStats saveInBackground];
                             }
                             
-                           
+                            
                         }];
                         
                     }
@@ -440,96 +467,18 @@
                     }
                     
 
-                    
-                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-                    
-                    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-                    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
-                        if (error) {
-                            NSLog(@"Data not available insert userdetails");
-                            
-                            
-                        } else {
-                            if (unquieArray.count==0) {
-                                [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
-                            }
-                            else{
-                                [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:100]];
-                            }
-                            mygroup=userStats[@"MyGroupArray"];
-                            [mygroup addObject:modal.groupId];
-                            userStats[@"MyGroupArray"]=mygroup;
-                            [[NSUserDefaults standardUserDefaults]setObject:mygroup forKey:@"MyGroup"];
-                            userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
-                            userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
-                            [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                if (!error) {
-                                    PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
-                                    testObject[@"PostStatus"]=@"Active";
-                                    
-                                    testObject[@"GroupId"]=modal.groupId;
-                                    testObject[@"MemberName"]=sharedObj.AccountName;
-                                    testObject[@"MobileNo"]=sharedObj.AccountNumber;
-                                    testObject[@"PostType"]=@"Member";
-                                    testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",sharedObj.AccountName];
-                                    testObject[@"MemberImage"]=userimage;
-                                    testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
-                                    testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
-                                    testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
-                                    testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
-                                    testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
-                                    testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
-                                    testObject[@"FeedLocation"]=point;
-                                    PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                                    
-                                    testObject[@"UserId"]=pointer;
-                                    [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        testObject[@"FeedupdatedAt"]=testObject.updatedAt;
-                                        [testObject saveInBackground];
-                                    }];
-                                    
-                                    PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-                                    [query whereKey:@"objectId" equalTo:modal.groupId];
-                                    
-                                    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
-                                        if (error) {
-                                            NSLog(@"Data not available insert userdetails");
-                                            
-                                        } else {
-                                           
-                                                     [self CallMyService];
-                                            
-                                        }
-                                    }];
-                                    
-
-                                   
-                                    
-                                    
-                                }
-                            }];
-                            
-                        }
-                    }];
-                    
-                    
-                    
                
                     
                 }
-            }];
+           
             
-        }
-                }];
-            }
+      
                 
                 else
                 {
-                    UIAlertView *errorAlert = [[UIAlertView alloc]
-                                               initWithTitle:@"" message:@"You need to be within the groups visibility range to part of this group. Once you are in range you will be part of this group.." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                    errorAlert.tag=111;
-                    [errorAlert show];
+                    [SVProgressHUD dismiss];
+                  
+                     [self.view makeToast:@"You need to be within the groups visibility range to part of this group. Once you are in range you will be part of this group.." duration:3.0 position:@"bottom"];
                 }
             }
             
@@ -582,7 +531,7 @@
                                 else
                                 {
                                     [sharedObj.MyinvitesArray removeAllObjects];
-                                    // [SVProgressHUD dismiss];
+                                     [SVProgressHUD dismiss];
                                     if (sharedObj.MyinvitesArray.count!=0) {
                                         [_invitationtableview setHidden:NO];
                                         [_noresultView setHidden:YES];
@@ -654,8 +603,8 @@
 
 -(void)rejectAction:(int)index
 {
+    [SVProgressHUD show];
     GroupModalClass*modal=[sharedObj.MyinvitesArray objectAtIndex:index];
-    
     PFQuery *invite=[PFQuery queryWithClassName:@"Invitation"];
     [invite whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
     [invite whereKey:@"GroupId" equalTo:modal.groupId];
@@ -664,12 +613,12 @@
         object[@"InvitationStatus"]=@"InActive";
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
-                
+                 [invitesIdArray removeAllObjects];
                 PFQuery *invitesquery=[PFQuery queryWithClassName:@"Invitation"];
                 [invitesquery whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
                 [invitesquery whereKey:@"InvitationStatus" equalTo:@"Active"];
                 [invitesquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                    [invitesIdArray removeAllObjects];
+                   
                     for (PFObject*inviteobj in objects) {
                         [invitesIdArray addObject:inviteobj[@"GroupId"]];
                     }
@@ -680,7 +629,7 @@
                     else
                     {
                         [sharedObj.MyinvitesArray removeAllObjects];
-                        // [SVProgressHUD dismiss];
+                        [SVProgressHUD dismiss];
                         if (sharedObj.MyinvitesArray.count!=0) {
                             [_invitationtableview setHidden:NO];
                             [_noresultView setHidden:YES];
@@ -724,6 +673,10 @@
                 }];
                 
                 
+            }
+            else
+            {
+                [SVProgressHUD dismiss];
             }
         }];
     }];

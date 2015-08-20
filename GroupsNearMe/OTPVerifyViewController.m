@@ -102,7 +102,7 @@
     
     if (otpString == NULL || otpString.length ==0) {
         [SVProgressHUD dismiss];
-        [self showAlert:@"Please enter verification code"];
+          [self.view makeToast:@"Please enter verification code" duration:3.0 position:@"bottom"];
         [_otpTextField becomeFirstResponder];
         return ;
     }
@@ -164,23 +164,16 @@
                         else if ([userstatus isEqualToString:@"SUSPENEDED"])
                         {
                              [SVProgressHUD dismiss];
-                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                            message:@"Your account has been suspended. You may try later."
-                                                                           delegate:nil
-                                                                  cancelButtonTitle:@"OK"
-                                                                  otherButtonTitles:nil];
-                            [alert show];
+                        
+                            
+                               [self.view makeToast:@"Your account has been suspended. You may try later." duration:3.0 position:@"bottom"];
                             return ;
                         }
                         else if ([userstatus isEqualToString:@"BANNED"])
                         {
                             [SVProgressHUD dismiss];
-                            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                            message:@"Your account has been blocked."
-                                                                           delegate:nil
-                                                                  cancelButtonTitle:@"OK"
-                                                                  otherButtonTitles:nil];
-                            [alert show];
+                           
+                             [self.view makeToast:@"Your account has been blocked." duration:3.0 position:@"bottom"];
                             return ;
                         }
                     }
@@ -190,8 +183,7 @@
             else
             {
                 [SVProgressHUD dismiss];
-                [self showAlert:@"Incorrect verification code"];
-                
+  [self.view makeToast:@"Incorrect verification code" duration:3.0 position:@"bottom"];
                 return;
             }
 
@@ -199,7 +191,7 @@
 
       else {
             [SVProgressHUD dismiss];
-            [self showAlert:@"Incorrect verification code"];
+           [self.view makeToast:@"Incorrect verification code" duration:3.0 position:@"bottom"];
             return;
         }
         
@@ -242,13 +234,6 @@
 }
 
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 
 @end

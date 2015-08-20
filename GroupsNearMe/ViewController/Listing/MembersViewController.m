@@ -12,6 +12,7 @@
 #import "GroupMemberTableViewCell.h"
 #import "MemberDetailViewController.h"
 #import "SVPullToRefresh.h"
+#import "SVProgressHUD.h"
 @interface MembersViewController ()
 
 @end
@@ -27,11 +28,12 @@
     {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    
+    sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     tempsearchArray= [[NSMutableArray alloc]init];
     resultArray=[[NSMutableArray alloc]init];
      [self callService];
-    _thesearchbar.layer.borderColor=[UIColor whiteColor].CGColor;
+    
     __weak MembersViewController *weakSelf = self;
     [self.membertableView addPullToRefreshWithActionHandler:^{
         int64_t delayInSeconds = 0.5;
@@ -47,6 +49,7 @@
             [weakSelf.membertableView.pullToRefreshView stopAnimating];
         });
     }];
+    
     _thesearchbar.layer.borderWidth=1.0;
     _thesearchbar.layer.borderColor=[UIColor whiteColor].CGColor;
     _thesearchbar.clipsToBounds=YES;
@@ -62,7 +65,7 @@
 }
 -(void)callService
 {
-    
+    [SVProgressHUD show];
     PFQuery *userquery=[PFQuery queryWithClassName:@"MembersDetails"];
     [userquery whereKey:@"MemberNo" containedIn:sharedObj.currentGroupmemberArray];
     [userquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
@@ -71,6 +74,7 @@
     [userquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
             NSLog(@"error in geo query!"); // todo why is this ever happening?
+            [SVProgressHUD dismiss];
         } else {
             if(objects.count!=0){
                 [sharedObj.MemberArray removeAllObjects];
@@ -95,10 +99,12 @@
                     [_membertableView reloadData];
                     
                 }
+                [SVProgressHUD dismiss];
             
         }
             else
             {
+                [SVProgressHUD dismiss];
                 [sharedObj.MemberArray removeAllObjects];
                 if (sharedObj.MemberArray.count!=0) {
                     [_membertableView reloadData];
@@ -154,10 +160,7 @@
  
     }
     cell.namelbl.text=modal.userName;
-//    NSURL *url = [NSURL URLWithString:modal.userImageurl];
-//    NSData *data = [NSData dataWithContentsOfURL:url];
-//    
-//
+
     cell.profileImageView.file=modal.userImageurl;
     [cell.profileImageView loadInBackground];
     if ([sharedObj.currentGroupAdminArray containsObject:modal.userNo]) {

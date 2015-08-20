@@ -23,38 +23,27 @@
     [super viewDidLoad];
     sharedObj=[Generic sharedMySingleton];
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-   // _createbtn.backgroundColor=[Generic colorFromRGBHexString:headerColor];
     create=NO;
     humanizedType = NSDateHumanizedSuffixAgo;
 
 
     timestamp=[[NSString alloc]init];
-    currentdate=[[NSString alloc]init];
-    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
-    sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
-       sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     groupId=[[NSString alloc]init];
     groupimgurl=[[PFFile alloc]init];
     mygroup=[[NSMutableArray alloc]init];
+    currentdate=[[NSString alloc]init];
     
-    PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-    [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query1 fromLocalDatastore];
-    [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (error) {
-        }
-        else{
-            userimage =[object objectForKey:@"ThumbnailPicture"];
-        }}];
+    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
+    sharedObj.AccountCountry=[[NSUserDefaults standardUserDefaults]objectForKey:@"CountryName"];
+    sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+  
+    
     _locationManager = [[CLLocationManager alloc] init];
-    
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _locationManager.distanceFilter = kCLLocationAccuracyNearestTenMeters;
     if(IS_OS_8_OR_LATER) {
         [_locationManager requestWhenInUseAuthorization];
-       // [_locationManager requestAlwaysAuthorization];
     }
     [_locationManager startUpdatingLocation];
     
@@ -94,15 +83,10 @@
     gr.numberOfTapsRequired=1;
     [self.radiusSlider addGestureRecognizer:gr];
     
-   // UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
     radiusVisibilty =(int)self.radiusSlider.value;
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d", radiusVisibilty ]] forState:_radiusSlider.state];
     
-    _headerview.layer.borderColor=[UIColor lightGrayColor].CGColor;
-    _headerview.layer.borderWidth=0.5;
-  
- [self showUserLocation];
+    [self showUserLocation];
 
     // Do any additional setup after loading the view.
 }
@@ -207,7 +191,6 @@
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
     NSLog(@"Region will changed...");
     [self.mapview removeAnnotation:dropPin];
-   // [self.mapview addSubview:self.annotationImage];
     
 }
 
@@ -215,10 +198,6 @@
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
     NSLog(@"Region did changed...");
     centre = [mapView centerCoordinate];
-    
-    
-   // [self.annotationImage removeFromSuperview];
-    
     dropPin.coordinate = centre;
     [self.mapview addAnnotation:dropPin];
     [self zoomMapview:radiusVisibilty];
@@ -267,9 +246,6 @@
     [self fitthemap:radiusVisibilty];
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
 
-//    NSString *str=[NSString stringWithFormat:@"%.f",[self.radiusSlider value]];
-//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d",radiusVisibilty ]] forState:_radiusSlider.state];
 }
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
@@ -301,12 +277,6 @@
     radiusVisibilty =(int)self.radiusSlider.value;
     [self fitthemap:radiusVisibilty];
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
-
-    
-    
-//    NSString *str=[NSString stringWithFormat:@"%.f",[self.radiusSlider value]];
-//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d", radiusVisibilty]] forState:_radiusSlider.state];
   
     
 }
@@ -353,8 +323,6 @@
     [self fitthemap:radiusVisibilty];
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
 
-//    UIImage *thumbImage=[UIImage imageNamed:@"slider.png"];
-//    [_radiusSlider setThumbImage:[self addText:thumbImage text:[NSString stringWithFormat:@"%d", radiusVisibilty ]] forState:_radiusSlider.state];
 }
 - (IBAction)createbtnClicked:(id)sender
 {
@@ -367,45 +335,39 @@
     }
     [SVProgressHUD showWithStatus:@"Creating Group...." maskType:SVProgressHUDMaskTypeBlack];
 
-
     pointVal = [PFGeoPoint geoPointWithLatitude:centre.latitude longitude:centre.longitude];
     sharedObj.radiusVisibilityVal=radiusVisibilty;
-    
-    
     PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+    groupimgurl=imageFile;
+    
+    PFObject *testObject = [PFObject objectWithClassName:@"Group"];
+    testObject[@"MobileNo"]=sharedObj.AccountNumber;
+    testObject[@"CountryName"]=sharedObj.AccountCountry;
+    testObject[@"GroupName"]=sharedObj.GroupName;
+    testObject[@"GroupPicture"]=imageFile;
+    testObject[@"GroupDescription"]=sharedObj.groupdescription;
+    testObject[@"GroupType"]=@"Open";
+    testObject[@"GroupLocation"]=pointVal;
+    testObject[@"MemberCount"]=[NSNumber numberWithInt:1];
+    testObject[@"NewsFeedCount"]=[NSNumber numberWithInt:0];
+    testObject[@"MemberInvitation"]=[NSNumber numberWithBool:NO];
+    testObject[@"GreenChannel"]=[[NSMutableArray alloc]init];
+    testObject[@"MembershipApproval"]=[NSNumber numberWithBool:NO];
+    testObject[@"JobScheduled"]=[NSNumber numberWithBool:NO];
+    testObject[@"JobHours"]=[NSNumber numberWithInt:0];
+    testObject[@"GroupStatus"]=@"Active";
+    testObject[@"GroupMembers"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+    testObject[@"AdminArray"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
+    testObject[@"AdditionalInfoRequired"]=[NSNumber numberWithBool:NO];
+    testObject[@"InfoRequired"]=@"";
+    testObject[@"VisibiltyRadius"]=[NSNumber numberWithInt:sharedObj.radiusVisibilityVal];
+    testObject[@"SecretStatus"]=[NSNumber numberWithBool:NO];
+    testObject[@"SecretCode"]=@"";
+    [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    if (!error) {
+        timestamp = [[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
+        groupId=testObject.objectId;
 
-            groupimgurl=imageFile;
-            PFObject *testObject = [PFObject objectWithClassName:@"Group"];
-            testObject[@"MobileNo"]=sharedObj.AccountNumber;
-            testObject[@"CountryName"]=sharedObj.AccountCountry;
-            testObject[@"GroupName"]=sharedObj.GroupName;
-            testObject[@"GroupPicture"]=imageFile;
-            testObject[@"GroupDescription"]=sharedObj.groupdescription;
-            testObject[@"GroupType"]=@"Open";
-            testObject[@"GroupLocation"]=pointVal;
-            testObject[@"MemberCount"]=[NSNumber numberWithInt:1];
-            testObject[@"NewsFeedCount"]=[NSNumber numberWithInt:0];
-            testObject[@"MemberInvitation"]=[NSNumber numberWithBool:NO];
-            testObject[@"GreenChannel"]=[[NSMutableArray alloc]init];
-            testObject[@"MembershipApproval"]=[NSNumber numberWithBool:NO];
-            testObject[@"JobScheduled"]=[NSNumber numberWithBool:NO];
-            testObject[@"JobHours"]=[NSNumber numberWithInt:0];
-            testObject[@"GroupStatus"]=@"Active";
-            testObject[@"GroupMembers"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
-            testObject[@"AdminArray"]=[[NSMutableArray alloc]initWithObjects:sharedObj.AccountNumber, nil];
-            testObject[@"AdditionalInfoRequired"]=[NSNumber numberWithBool:NO];
-            testObject[@"InfoRequired"]=@"";
-            testObject[@"LatestPost"]=@"";
-            
-            testObject[@"VisibiltyRadius"]=[NSNumber numberWithInt:sharedObj.radiusVisibilityVal];
-            testObject[@"SecretStatus"]=[NSNumber numberWithBool:NO];
-            testObject[@"SecretCode"]=@"";
-            [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (!error) {
-                 
-                    timestamp = [[testObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
-                    
-                    
                     PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
                     member[@"GroupId"]=groupId;
                     member[@"MemberNo"]=sharedObj.AccountNumber;
@@ -417,23 +379,18 @@
                     member[@"LeaveDate"]=[NSDate date];
                     member[@"MemberStatus"]=@"Active";
                     member[@"ExitedBy"]=@"";
-                    member[@"MemberImage"]=userimage;
-                    member[@"MemberName"]=sharedObj.AccountName;
                     PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                    
                     member[@"UserId"]=pointer;
-                    [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                        if (succeeded) {
-                            PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                        
-                            [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
+                   [member saveInBackground];
+        
+        
+                    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
+                    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
                                 if (error) {
                                     NSLog(@"Data not available insert userdetails");
                                     [SVProgressHUD dismiss];
                                     
-                                    
                                 } else {
-                                    groupId=testObject.objectId;
                                     mygroup=userStats[@"MyGroupArray"];
                                     [mygroup addObject:testObject.objectId];
                                     userStats[@"MyGroupArray"]=mygroup;
@@ -457,20 +414,6 @@
                             NSLog(@"Error: %@ %@", error, [error userInfo]);
                         }
                     }];
-
-                    
-                    
-                    
-
-                        }
-                else
-                {
-                    [SVProgressHUD dismiss];
-                }
-                    }];
-                    
-    
-
     
 }
 -(void)CallMyService
@@ -478,7 +421,7 @@
     
     [SVProgressHUD showWithStatus:@"Group Created Successfully...." maskType:SVProgressHUDMaskTypeBlack];
 
-                  [SVProgressHUD dismiss];
+    [SVProgressHUD dismiss];
               
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     InsideGroupViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InsideGroupViewController"];

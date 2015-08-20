@@ -44,9 +44,9 @@
     [super layoutSubviews];
     CGRect contentRect = self.contentView.bounds;
     containerview.frame=CGRectMake(10, 10, contentRect.size.width-20, contentRect.size.height-20);
-    selectimageview.frame=CGRectMake(containerview.frame.size.width-20,27.5,25,25);
-    namelabel.frame=CGRectMake(55, 3, containerview.frame.size.width-55,25);
-    detaillabel.frame=CGRectMake(57, 30, containerview.frame.size.width-90, 75);
+    selectimageview.frame=CGRectMake(containerview.frame.size.width-20,30,20,20);
+    namelabel.frame=CGRectMake(60, 3, containerview.frame.size.width-60,25);
+    detaillabel.frame=CGRectMake(62, 30, containerview.frame.size.width-90, 75);
     [detaillabel sizeToFit];
 }
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
