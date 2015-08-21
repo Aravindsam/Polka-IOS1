@@ -493,7 +493,7 @@
     settingsViewController.indexval=(int)indexPath.row;
     sharedobj.groupType=modal.groupType;
     sharedobj.GroupId=modal.groupId;
-    sharedobj.frommygroup=YES;
+    //sharedobj.frommygroup=YES;
     sharedobj.groupimageurl=modal.groupImageData;
     sharedobj.groupMember=[NSString stringWithFormat:@"%d",modal.memberCount];
     sharedobj.groupdescription=modal.groupDescription;
@@ -626,7 +626,9 @@
 -(void)joinfree:(int)index
 {
     [SVProgressHUD show];
-    
+    myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
+    unquieArray=[NSMutableArray arrayWithArray:myGroupIdArray];
+    [unquieArray removeObjectsInArray:ownerGroup];
     GroupModalClass *modal;
     if (sharedobj.search) {
         modal = [sharedobj.searchNearby objectAtIndex:index];

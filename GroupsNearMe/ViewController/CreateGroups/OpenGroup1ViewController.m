@@ -365,7 +365,7 @@
 
 -(void)image:(UIImage *)image finishedSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     if (error){
-        [self showAlert:@"Failed to save image"];
+        [self.view makeToast:@"Failed to save image" duration:3.0 position:@"bottom"];
     }
 }
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -383,14 +383,7 @@
     return YES;
 }
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
+
 - (IBAction)back:(id)sender {
     
     sharedObj.groupimageData=nil;
@@ -421,18 +414,16 @@
     
     if (_backgroundImageView.image==nil) {
         next=NO;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please upload a group image"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+      
+        
+        [self.view makeToast:@"Please upload a group image" duration:3.0 position:@"bottom"];
         return;
         
     }
     if (groupname == NULL || groupname.length ==0) {
         next=NO;
-        [self showAlert:@"Please enter group name"];
+       
+        [self.view makeToast:@"Please enter group name" duration:3.0 position:@"bottom"];
         [_groupnameTextfield becomeFirstResponder];
         
         return ;
@@ -442,12 +433,8 @@
     
     if (groupDescription.length==0) {
          next=NO;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                        message:@"Please write a description for your group"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+      
+        [self.view makeToast:@"Please write a description for your group" duration:3.0 position:@"bottom"];
         return;
     }
     
@@ -461,13 +448,8 @@
         else{
             if (objects.count!=0) {
                  next=NO;
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                                message:@"Group name already exists. Please try another name"
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                [alert show];
-                
+              
+                 [self.view makeToast:@"Group name already exists. Please try another name" duration:3.0 position:@"bottom"];
                 return;
                 
                 

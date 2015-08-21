@@ -21,7 +21,6 @@
     int acceptindex;
     CLLocationManager *locationManager;
     CLLocation *_currentLocation;
-    PFFile*userimage;
     NSDateHumanizedType humanizedType;
 
 }

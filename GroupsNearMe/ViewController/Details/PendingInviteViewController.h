@@ -29,6 +29,7 @@
     NSDateHumanizedType humanizedType;
 
 }
+@property(nonatomic,assign)BOOL callservice;
 @property (strong, nonatomic) IBOutlet UIView *headerView;
 @property (strong, nonatomic) IBOutlet UILabel *noresultView;
 - (IBAction)back:(id)sender;

@@ -29,7 +29,7 @@
     UIView*backgroundview;
     UIButton *cancelbtn,*sendbtn;
     UIImage *feedimage;
-    PFFile*userimage;
+
     BOOL internetConnected;
     UITapGestureRecognizer*update;
 }

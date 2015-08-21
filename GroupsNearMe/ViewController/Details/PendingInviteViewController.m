@@ -12,6 +12,8 @@
 #import "InvitesTableViewCell.h"
 #import "Toast+UIView.h"
 #import "SVProgressHUD.h"
+#import "UpdateGroupProfileViewController.h"
+
 #define IS_OS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
 @interface PendingInviteViewController ()
@@ -19,7 +21,7 @@
 @end
 
 @implementation PendingInviteViewController
-@synthesize point;
+@synthesize point,callservice;
 - (void)viewDidLoad {
     [super viewDidLoad];
     sharedObj=[Generic sharedMySingleton];
@@ -64,14 +66,28 @@
         }
         
     }];
+    __weak PendingInviteViewController *weakSelf = self;
+    [self.invitationtableview addPullToRefreshWithActionHandler:^{
+        int64_t delayInSeconds = 0.5;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [weakSelf.invitationtableview beginUpdates];
+            
+            
+            [weakSelf refreshservice];
+            
+            [weakSelf.invitationtableview endUpdates];
+            [weakSelf.invitationtableview.pullToRefreshView stopAnimating];
+        });
+    }];
     
+
     [_invitationtableview setHidden:YES];
     [_noresultView setHidden:YES];
     // Do any additional setup after loading the view.
 }
--(void)viewWillAppear:(BOOL)animated
+-(void)refreshservice
 {
-    [super viewWillAppear:animated];
     BOOL internetconnect=[sharedObj connected];
     
     if (!internetconnect) {
@@ -80,40 +96,49 @@
     }
     else{
         [SVProgressHUD show];
-    [invitesIdArray removeAllObjects];
-    PFQuery *invitesquery=[PFQuery queryWithClassName:@"Invitation"];
-    [invitesquery whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
-    [invitesquery whereKey:@"InvitationStatus" equalTo:@"Active"];
-    [invitesquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-       
-        for (PFObject*inviteobj in objects) {
-            [invitesIdArray addObject:inviteobj[@"GroupId"]];
-        }
-        
-        if (invitesIdArray.count!=0) {
-            [self callInvites];
-        }
-        else
-        {
-            [SVProgressHUD dismiss];
-            [sharedObj.MyinvitesArray removeAllObjects];
-            if (sharedObj.MyinvitesArray.count!=0) {
-                [_invitationtableview setHidden:NO];
-                [_noresultView setHidden:YES];
-                [_invitationtableview reloadData];
+        [invitesIdArray removeAllObjects];
+        PFQuery *invitesquery=[PFQuery queryWithClassName:@"Invitation"];
+        [invitesquery whereKey:@"ToUser" equalTo:sharedObj.AccountNumber];
+        [invitesquery whereKey:@"InvitationStatus" equalTo:@"Active"];
+        [invitesquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            
+            for (PFObject*inviteobj in objects) {
+                [invitesIdArray addObject:inviteobj[@"GroupId"]];
+            }
+            
+            if (invitesIdArray.count!=0) {
+                [self callInvites];
             }
             else
             {
-                [_invitationtableview setHidden:YES];
-                 [_noresultView setHidden:NO];
+                [SVProgressHUD dismiss];
+                [sharedObj.MyinvitesArray removeAllObjects];
+                if (sharedObj.MyinvitesArray.count!=0) {
+                    [_invitationtableview setHidden:NO];
+                    [_noresultView setHidden:YES];
+                    [_invitationtableview reloadData];
+                }
+                else
+                {
+                    [_invitationtableview setHidden:YES];
+                    [_noresultView setHidden:NO];
+                }
+                
+                
             }
             
-            
-        }
-
-    }];
+        }];
     }
 
+    
+}
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (callservice) {
+          [self refreshservice];
+    }
+  
     [locationManager startUpdatingLocation];
 }
 #pragma mark - CLLocationManagerDelegate
@@ -271,6 +296,35 @@
     return cell;
 
 }
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    GroupModalClass *modal;
+    callservice=NO;
+    modal = [sharedObj.MyinvitesArray objectAtIndex:indexPath.row];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UpdateGroupProfileViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"UpdateGroupProfileViewController"];
+    settingsViewController.Fromnearby=NO;
+    settingsViewController.indexval=(int)indexPath.row;
+    sharedObj.groupType=modal.groupType;
+    sharedObj.GroupId=modal.groupId;
+//   sharedobj.frommygroup=YES;
+    sharedObj.groupimageurl=modal.groupImageData;
+    sharedObj.groupMember=[NSString stringWithFormat:@"%d",modal.memberCount];
+    sharedObj.groupdescription=modal.groupDescription;
+    sharedObj.GroupName=modal.groupName;
+    sharedObj.secretCode=modal.secretCode;
+    sharedObj.currentGroupAdminArray=modal.groupAdminArray;
+    sharedObj.currentGroupmemberArray=modal.groupMemberArray;
+    sharedObj.currentgroupEstablished=modal.timeVal;
+    sharedObj.currentgroupAddinfo=modal.addInfoRequired;
+    sharedObj.addinfo=modal.addinfoString;
+    sharedObj.currentgroupOpenEntry=modal.openEntry;
+    sharedObj.currentgroupradius=modal.visibiltyradius;
+    sharedObj.currentgroupSecret=modal.SecretStatus;
+    
+    
+    [self.navigationController pushViewController:settingsViewController animated:YES];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 110;
 }

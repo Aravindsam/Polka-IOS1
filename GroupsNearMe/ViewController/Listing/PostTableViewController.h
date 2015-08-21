@@ -43,7 +43,7 @@
     int flagcount,userflagcount;
     CLLocationManager *locationManager;
     CLLocation *_currentLocation;
-    PFFile*userimage;
+
     int updateCount;
     int oldcount;
     NSDateHumanizedType humanizedType;

@@ -154,11 +154,12 @@
     description=_descriptionView.text;
     description=[description stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([category isEqualToString:@"Choose Category"]|| category.length==0||category==NULL) {
-        [self showAlert:@"Please Choose Category"];
+       
+         [self.view makeToast:@"Please Choose Category" duration:3.0 position:@"bottom"];
         return;
     }
     if (description.length==0||description==NULL) {
-        [self showAlert:@"Description cannot be empty"];
+          [self.view makeToast:@"Description cannot be empty" duration:3.0 position:@"bottom"];
         return;
     }
     [SVProgressHUD showWithStatus:@"Sending Feedback..." maskType:SVProgressHUDMaskTypeBlack];
@@ -197,12 +198,4 @@
     return YES;
 }
 
--(void)showAlert:(NSString*)text{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
-                                                    message:text
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
-}
 @end

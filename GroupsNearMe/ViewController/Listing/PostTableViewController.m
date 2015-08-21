@@ -1373,10 +1373,21 @@
             [cell.acceptbtn setImage:[UIImage imageNamed:@"approve.png"] forState:UIControlStateNormal];
             [cell.rejectbtn setImage:[UIImage imageNamed:@"Reject.png"] forState:UIControlStateNormal];
             cell.timelbl.text=timestamp;
-            cell.welcomelbl.text=@"Joining Request";
+            cell.welcomelbl.text=@"Requested to join";
             cell.backgroundColor=[UIColor colorWithRed:232.0/255.0 green:232.0/255.0 blue:232.0/255.0 alpha:1.0];
-            cell.additionallabel.text=@"Additional Info";
-            cell.infolabel.text=object[@"PostText"];
+            NSString*temp=object[@"PostText"];
+            if ([temp isEqualToString:@"No Information Available"] || [temp isEqualToString:@"No Informations Available"]|| temp.length==0) {
+                cell.infolabel.hidden=YES;
+                cell.verticallabel.hidden=YES;
+                
+            }
+            else
+            {        cell.infolabel.text=object[@"PostText"];
+                cell.infolabel.hidden=NO;
+                cell.verticallabel.hidden=NO;
+                
+            }
+
             cell.acceptbtn.tag=indexPath.row;
             cell.rejectbtn.tag=indexPath.row;
             cell.layer.cornerRadius=5.0;
@@ -1640,19 +1651,11 @@
             int widthimg=[object[@"ImageWidth"] intValue];
             int heightimg=[object[@"ImageHeight"]intValue];
             
-//            float hfactor = widthimg /self.tableView.frame.size.width;
-//            float vfactor = heightimg/ self.tableView.frame.size.height;
-//            
-//            float factor = fmax(hfactor, vfactor);
-//            
-//            // Divide the size by the greater of the vertical or horizontal shrinkage factor
-//            //float newWidth = widthimg / factor;
-//            float newHeight = heightimg / factor;
+
             
             double aspectratio=(double)heightimg/widthimg;
              double difference=aspectratio*(self.tableView.frame.size.width-20);
-//            if(aspectratio >1.0)
-//            {
+
                 if (animal == NULL || animal.length ==0)
                 {
 
@@ -1663,39 +1666,28 @@
                     tableHeight= 195+difference;
 
                 }
-//            }
-//            else if(aspectratio==1)
-//            {
-//                if (animal == NULL || animal.length ==0)
-//                {
-//                tableHeight= 145+280;
-//                }
-//                else
-//                {
-//                    tableHeight= 195+280;
-//
-//                    
-//                }
-//            }
-//            else
-//            {
-//                if (animal == NULL || animal.length ==0)
-//                {
-//                    tableHeight= 145+240;
-//                }
-//                else
-//                {
-//                    tableHeight= 195+240;
-//                    
-//                    
-//                }
-//                
-//            }
+
 
                     }
         else if ([object[@"PostType"] isEqualToString:@"Invitation"])
         {
-            tableHeight=160;
+            label=[[UILabel alloc]init];
+            [label setFrame:CGRectMake(10,5, self.view.frame.size.width-30, 1000)];
+            label.numberOfLines=0;
+            label.font=[UIFont fontWithName:@"Lato-regular" size:16.0];
+             NSString *animal = object[@"PostText"];
+            
+            [label setText:animal];
+            [self findFrameFromString:label.text andCorrespondingLabel:label];
+            
+            if ([animal isEqualToString:@"No Information Available"] || [animal isEqualToString:@"No Informations Available"]|| animal.length==0) {
+                
+                tableHeight= 100;
+                
+            }
+            else
+                tableHeight=  label.frame.size.height+140;
+
             
         }
         else if ([object[@"PostType"] isEqualToString:@"Member"])
@@ -2237,7 +2229,6 @@
                 if (error) {
                 }
                 else{
-                    userimage =[object objectForKey:@"ThumbnailPicture"];
 
             approval=[object[@"MembershipApproval"]boolValue];
             sharedObj.currentGroupAdminArray=object[@"AdminArray"];
@@ -2357,10 +2348,10 @@
                                                      testObject[@"PostStatus"]=@"Active";
                                                      testObject[@"GroupId"]=feed[@"GroupId"];
                                                      testObject[@"FeedLocation"]=point;
-                                                     testObject[@"MemberName"]=feed[@"UserId"][@"UserName"];
+                                                   
                                                      
                                                      
-                                                      testObject[@"MemberImage"]=userimage;
+                                                     
                                                      testObject[@"MobileNo"]=feed[@"UserId"][@"MobileNo"];
                                                      testObject[@"PostType"]=@"Member";
                                                      testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",feed[@"UserId"][@"UserName"]];
@@ -2450,11 +2441,11 @@
                                                      PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
                                                      testObject[@"PostStatus"]=@"Active";
                                                      testObject[@"GroupId"]=feed[@"GroupId"];
-                                                     testObject[@"FeedLocation"]=point;testObject[@"MemberName"]=feed[@"UserId"][@"UserName"];
+                                                     testObject[@"FeedLocation"]=point;
                                                      testObject[@"MobileNo"]=feed[@"UserId"][@"MobileNo"];
                                                      testObject[@"PostType"]=@"Member";
                                                      testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",feed[@"UserId"][@"UserName"]];
-                                                     testObject[@"MemberImage"]=userimage;
+                                                     
                                                      testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
                                                      testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
                                                      testObject[@"FlagCount"]=[NSNumber numberWithInt:0];

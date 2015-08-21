@@ -13,6 +13,7 @@
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
 #import "KxMenu.h"
+#import "Toast+UIView.h"
 @interface MemberDetailViewController ()
 
 @end
@@ -506,13 +507,12 @@
              switch (result)
              {
                  case SLComposeViewControllerResultDone:
-                     
-                     [weakSelf showAlertWithMessage:@"Posted Successfully." Title:@"Chatterati"];
+                    
+                       [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                      
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
-                     //                     [self showAlertWithMessage:@"Post Cancelled." Title:@"iFlicks"];
                      break;
                  default:
                      break;
@@ -534,15 +534,11 @@
     
     else
     {
-        [self showAlertWithMessage:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+        [self.view makeToast:@"You must configure Facebook account for sharing.You can add or create a Facebook/Twitter account in Settings" duration:3.0 position:@"bottom"];
     }
     
 }
--(void)showAlertWithMessage:(NSString *)message Title:(NSString *)title
-{
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:@"" message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [alert show];
-}
+
 -(void)twitterShareSelected:(UIImage*)ImageData
 {
     if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
@@ -558,7 +554,9 @@
              {
                  case SLComposeViewControllerResultDone:
                      
-                     [weakSelf showAlertWithMessage:@"Posted Successfully" Title:@"Chatterati"];
+                   
+                     
+                     [weakSelf.view makeToast:@"Posted Successfully" duration:3.0 position:@"bottom"];
                      break;
                      
                  case SLComposeViewControllerResultCancelled:
@@ -579,7 +577,8 @@
     }
     else
     {
-        [self showAlertWithMessage:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings." Title:@"Chatterati"];
+   
+        [self.view makeToast:@"You must configure Twitter account for sharing.You can add or create a Facebook/Twitter account in Settings" duration:3.0 position:@"bottom"];
     }
 }
 
@@ -591,7 +590,8 @@
     NSLog(@"Whats app Sharing Selected");
     if ([MFMessageComposeViewController canSendText]) {
         if (![WhatsAppKit isWhatsAppInstalled]) {
-            [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+           
+                [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
         }
         else
         {
@@ -625,7 +625,8 @@
             }
             else
             {
-                [self showAlertWithMessage:@"You must configure WhatsApp account for sharing." Title:@"Chatterati"];
+          
+                  [self.view makeToast:@"You must configure WhatsApp account for sharing" duration:3.0 position:@"bottom"];
             }
             
             
@@ -635,7 +636,7 @@
     }
     else
     {
-        [self showAlertWithMessage:@"WhatsApp Feature is not applicable." Title:@"Chatterati"];
+        [self.view makeToast:@"WhatsApp Feature is not applicable" duration:3.0 position:@"bottom"];
     }
 }
 - (UIDocumentInteractionController *) setupControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate {

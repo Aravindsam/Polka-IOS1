@@ -165,7 +165,18 @@
     cell.welcomelbl.text=@"Requested to join";
     cell.backgroundColor=[UIColor clearColor];
     //cell.additionallabel.text=@"Additional Info";
-    cell.infolabel.text=inviteobj[@"PostText"];
+    NSString*temp=inviteobj[@"PostText"];
+    if ([temp isEqualToString:@"No Information Available"] || [temp isEqualToString:@"No Informations Available"]|| temp.length==0) {
+        cell.infolabel.hidden=YES;
+        cell.verticallabel.hidden=YES;
+
+    }
+    else
+    {        cell.infolabel.text=inviteobj[@"PostText"];
+        cell.infolabel.hidden=NO;
+        cell.verticallabel.hidden=NO;
+       
+    }
     cell.acceptbtn.tag=indexPath.row;
     cell.rejectbtn.tag=indexPath.row;
     cell.layer.cornerRadius=5.0;
@@ -189,8 +200,15 @@
     NSString *animal = object[@"PostText"];
     [label setText:animal];
     [self findFrameFromString:label.text andCorrespondingLabel:label];
-   
-        tableHeight=  label.frame.size.height+140;
+    
+    if ([animal isEqualToString:@"No Information Available"] || [animal isEqualToString:@"No Informations Available"]|| animal.length==0) {
+       
+        tableHeight= 100;
+
+    }
+    else
+         tableHeight=  label.frame.size.height+140;
+
     return tableHeight;
 
 }
@@ -255,7 +273,6 @@
                 if (error) {
                 }
                 else{
-                    userimage =[object objectForKey:@"ThumbnailPicture"];
             
         approval=[object[@"MembershipApproval"]boolValue];
             sharedObj.currentGroupAdminArray=object[@"AdminArray"];
@@ -265,13 +282,12 @@
             }
             else
             {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invitation Approval"
-                                                                    message:@"You are not authorised to accept the invitation"
-                                                                   delegate:nil
-                                                          cancelButtonTitle:nil
-                                                          otherButtonTitles:@"Ok", nil];
-                [alertView show];
+                
+                [self.view makeToast:@"You are not authorised to accept the invitation" duration:3.0 position:@"bottom"];
                 return;
+                
+                
+                
             }
         }
         else
@@ -380,7 +396,7 @@
                                              testObject[@"PostStatus"]=@"Active";
                                              testObject[@"GroupId"]=feed[@"GroupId"];
                                               testObject[@"FeedLocation"]=point;
-                                             testObject[@"MemberName"]=feed[@"UserId"][@"UserName"];
+                                             
                                              testObject[@"MobileNo"]=feed[@"UserId"][@"MobileNo"];
                                              testObject[@"PostType"]=@"Member";
                                              testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",feed[@"UserId"][@"UserName"]];
@@ -389,7 +405,7 @@
                                              testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
                                              testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
                                              
-                                             testObject[@"MemberImage"]=userimage;
+                                          
                                              testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
                                              testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
                                              PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
@@ -471,11 +487,11 @@
                                              PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
                                              testObject[@"PostStatus"]=@"Active";
                                              testObject[@"GroupId"]=feed[@"GroupId"];
-                                              testObject[@"FeedLocation"]=point;testObject[@"MemberName"]=feed[@"UserId"][@"UserName"];
+                                              testObject[@"FeedLocation"]=point;
                                              testObject[@"MobileNo"]=feed[@"UserId"][@"MobileNo"];
                                              testObject[@"PostType"]=@"Member";
                                              testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",feed[@"UserId"][@"UserName"]];
-                                              testObject[@"MemberImage"]=userimage;
+                                          
                                              testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
                                              testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
                                              testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
@@ -602,12 +618,8 @@
             
                        else
             {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invitation Approval"
-                                                                    message:@"You are not authorised to reject the invitation"
-                                                                   delegate:nil
-                                                          cancelButtonTitle:nil
-                                                          otherButtonTitles:@"Ok", nil];
-                [alertView show];
+               
+                [self.view makeToast:@"You are not authorised to reject the invitation" duration:3.0 position:@"bottom"];
                 return;
             }
         }

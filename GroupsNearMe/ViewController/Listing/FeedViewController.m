@@ -63,16 +63,7 @@
         // [locationManager requestAlwaysAuthorization];
     }
     [locationManager startUpdatingLocation];
-    PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query fromLocalDatastore];
-    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-        if (error) {
-        }
-        else{
-            userimage =[object objectForKey:@"ThumbnailPicture"];
-        }}];
+   
     [self.view setFrame:sharedObj.feedViewFrame];
     [_postView setFrame:CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height-48)];
      [_containerView setFrame:CGRectMake(0, self.view.frame.size.height-48, self.view.frame.size.width, 48)];
@@ -186,14 +177,7 @@
                                                                   options:0
                                                                     range:NSMakeRange(0, textView1.text.length)];
                 if (matchCount>0) {
-                    UIAlertView *ImageAlert = [[UIAlertView alloc]
-                                               initWithTitle:@""
-                                               message:@"You cannot post links in this group"
-                                               delegate:self
-                                               cancelButtonTitle:@"Ok"
-                                               otherButtonTitles:nil, nil];
-                    ImageAlert.tag=11;
-                    [ImageAlert show];
+                    [self.view makeToast:@"You cannot post links in this group" duration:3.0 position:@"bottom"];
                 }
                 else
                 {
@@ -716,12 +700,10 @@
 [SVProgressHUD showWithStatus:@"Posting"];
     PFObject *postObject = [PFObject objectWithClassName:@"GroupFeed"];
     postObject[@"GroupId"]=sharedObj.GroupId;
-    postObject[@"MemberName"]=sharedObj.AccountName;
     postObject[@"MobileNo"]=sharedObj.AccountNumber;
     postObject[@"PostType"]=@"Text";
     postObject[@"ImageWidth"]=[NSNumber numberWithInt:0];
     postObject[@"ImageHeight"]=[NSNumber numberWithInt:0];
-    postObject[@"MemberImage"]=userimage;
     postObject[@"PostText"]=textPost;
     postObject[@"CommentCount"]=[NSNumber numberWithInt:0];
     postObject[@"PostPoint"]=[NSNumber numberWithInt:100];
@@ -795,7 +777,6 @@
             // Stitch together a postObject and send this async to Parse
             PFObject *postObject = [PFObject objectWithClassName:@"GroupFeed"];
             postObject[@"GroupId"]=sharedObj.GroupId;
-            postObject[@"MemberName"]=sharedObj.AccountName;
             postObject[@"MobileNo"]=sharedObj.AccountNumber;
             if (textPost.length!=0) {
             postObject[@"PostType"]=@"Text";
@@ -809,7 +790,6 @@
                 postObject[@"ImageHeight"]=[NSNumber numberWithInt:tempimag.size.height];
 
             }
-            postObject[@"MemberImage"]=userimage;
             postObject[@"PostText"]=textPost;
             postObject[@"Postimage"]=imageFile;
             postObject[@"CommentCount"]=[NSNumber numberWithInt:0];

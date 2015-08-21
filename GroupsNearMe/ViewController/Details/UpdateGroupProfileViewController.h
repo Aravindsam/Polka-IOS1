@@ -40,7 +40,7 @@
     NSString*inviationId;
     NSMutableArray*invitationarray;
     NSMutableArray*invitationArray,*ownerGroup,*groupMembers,*unquieArray;
-    PFFile*userimage;
+
 }
 @property(nonatomic,retain) UIDocumentInteractionController *documentationInteractionController;
 

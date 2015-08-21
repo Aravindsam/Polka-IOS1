@@ -27,7 +27,6 @@
     CLLocation *_currentLocation;
      PFObject *sharefeed;
     SLComposeViewController *mySlcomposerView;
-    PFFile*userimage;
 
 }
 @property(nonatomic,retain) UIDocumentInteractionController *documentationInteractionController;

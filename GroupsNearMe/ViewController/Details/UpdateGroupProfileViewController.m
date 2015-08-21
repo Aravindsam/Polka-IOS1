@@ -116,27 +116,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     _profilegrpScrollview.contentSize=CGSizeMake(_profilegrpScrollview.frame.size.width, [self findViewHeight:_profilegrpgrpView.frame]+20);
     if (Fromnearby) {
-        PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-        [query1 whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-        [query1 fromLocalDatastore];
-        [query1 whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-        [query1 getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
-            if (error) {
-            }
-            else{
-                userimage =[object objectForKey:@"ThumbnailPicture"];
-            }}];
+       
         _joinbutton.hidden=NO;
-        if ([sharedObj.groupType isEqualToString:@"Private"]) {
+        
             [_joinbutton setTitle:@"JOIN" forState:UIControlStateNormal];
-        }
-        else if ([sharedObj.groupType isEqualToString:@"Public"]) {
-              [_joinbutton setTitle:@"OPEN" forState:UIControlStateNormal];
-        }
-        else
-        {
-            [_joinbutton setTitle:@"OPEN" forState:UIControlStateNormal];
-        }
+      
     }
     else
     {
@@ -608,7 +592,13 @@
     [[self navigationController]popViewControllerAnimated:YES];
 }
 - (IBAction)joingroup:(id)sender {
+    BOOL internetconnect=[sharedObj connected];
     
+    if (!internetconnect) {
+        [self.view makeToast:@"No Internet Connection" duration:3.0 position:@"bottom"];
+        
+    }
+    else{
     myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     
     GroupModalClass *modal;
@@ -626,62 +616,7 @@
             [self joinfree:indexval];
             
         }
-        else{
-            if (modal.groupChannelArray.count!=0) {
-                NSMutableSet *intersection = [NSMutableSet setWithArray:modal.groupChannelArray];
-                [intersection intersectSet:[NSSet setWithArray:myGroupIdArray]];
-                NSArray *array4 = [intersection allObjects];
-                if (array4.count!=0) {
-                    [self joinfree:indexval];
-                }
-                else
-                {
-                    if (modal.addInfoRequired) {
-                        inviationId=modal.groupId;
-                        
-                        UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"Additional Information" message:[NSString stringWithFormat:@"Enter %@",modal.addinfoString] delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
-                        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-                        [alert addButtonWithTitle:@"Join"];
-                        [alert setTag:33];
-                        [alert show];
-                        
-                    }
-                    else if (modal.secretCode.length!=0) {
-                        UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"Verification" message:@"Please enter passcode to join this group" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
-                        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-                        [alert addButtonWithTitle:@"Join"];
-                        [alert setTag:44];
-                        [alert show];
-                        
-                    }
-                    else
-                    {
-                         [SVProgressHUD showWithStatus:@"Request to join Group..." maskType:SVProgressHUDMaskTypeBlack];
-                        inviationId=modal.groupId;
-                        PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
-                        testObject[@"PostStatus"]=@"Active";
-                        testObject[@"GroupId"]=modal.groupId;
-                        testObject[@"MemberName"]=sharedObj.AccountName;
-                        testObject[@"MobileNo"]=sharedObj.AccountNumber;
-                        testObject[@"PostType"]=@"Invitation";
-                        testObject[@"FeedLocation"]=point;
-                        testObject[@"PostText"]=@"No Information Available";
-                        testObject[@"MemberImage"]=userimage;
-                        PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                        
-                        testObject[@"UserId"]=pointer;
-                        [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                    if (succeeded) {
-                                        [self sendinginvitation];
-                                    }
-                                }];
-                        
-                        
-                        
-                    }
-                }
-            }
-            else if (modal.secretCode.length!=0) {
+        else if (modal.secretCode.length!=0) {
                 UIAlertView * alert =[[UIAlertView alloc ] initWithTitle:@"Verification" message:@"Please enter passcode to join this group" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles: nil];
                 alert.alertViewStyle = UIAlertViewStylePlainTextInput;
                 [alert addButtonWithTitle:@"Join"];
@@ -703,16 +638,13 @@
             }
             else
             {
-                 [SVProgressHUD showWithStatus:@"Request to join Group..." maskType:SVProgressHUDMaskTypeBlack];
+                [SVProgressHUD show];
                 inviationId=modal.groupId;
                 PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
                 testObject[@"PostStatus"]=@"Active";
                 testObject[@"GroupId"]=modal.groupId;
-                testObject[@"MemberName"]=sharedObj.AccountName;
                 testObject[@"MobileNo"]=sharedObj.AccountNumber;
                 testObject[@"PostType"]=@"Invitation";
-                testObject[@"MemberImage"]=userimage;
-                
                 testObject[@"FeedLocation"]=point;
                 testObject[@"PostText"]=@"No Information Available";
                 PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
@@ -727,23 +659,20 @@
                 
             }
         }
-        
-    }
+
     else
     {
         [self joinfree:indexval];
     }
-    
+    }
 }
 
 -(void)sendinginvitation
 {
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-    
-    [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
+    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *object, NSError *error) {
+
         if (error) {
             [SVProgressHUD dismiss];
         }
@@ -772,11 +701,11 @@
 
 -(void)joinfree:(int)index
 {
-    [SVProgressHUD showWithStatus:@"Joining Group..." maskType:SVProgressHUDMaskTypeBlack];
+    [SVProgressHUD show];
+   
     myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     unquieArray=[NSMutableArray arrayWithArray:myGroupIdArray];
     [unquieArray removeObjectsInArray:ownerGroup];
-    
     GroupModalClass *modal;
     if (sharedObj.search) {
         modal = [sharedObj.searchNearby objectAtIndex:index];
@@ -790,8 +719,6 @@
     PFObject *member=[PFObject objectWithClassName:@"MembersDetails"];
     member[@"GroupId"]=modal.groupId;
     member[@"MemberNo"]=sharedObj.AccountNumber;
-    member[@"MemberImage"]=userimage;
-    member[@"MemberName"]=sharedObj.AccountName;
     member[@"JoinedDate"]=[NSDate date];
     member[@"AdditionalInfoProvided"]=@"";
     member[@"GroupAdmin"]=[NSNumber numberWithBool:NO];
@@ -803,13 +730,31 @@
     PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
     
     member[@"UserId"]=pointer;
-    [member saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            
+    [member saveInBackground];
+    
+    PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
+    testObject[@"PostStatus"]=@"Active";
+    
+    testObject[@"GroupId"]=modal.groupId;
+    testObject[@"MobileNo"]=sharedObj.AccountNumber;
+    testObject[@"PostType"]=@"Member";
+    testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined in this group",sharedObj.AccountName];
+    testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
+    testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
+    testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
+    testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
+    testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
+    testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
+    testObject[@"FeedLocation"]=point;
+    testObject[@"FeedupdatedAt"]=[NSDate date];
+
+    PFObject *pointer1 = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
+    
+    testObject[@"UserId"]=pointer1;
+    [testObject saveInBackground];
+    
             PFQuery *query = [PFQuery queryWithClassName:@"Group"];
-            [query whereKey:@"objectId" equalTo:modal.groupId];
-            
-            [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
+           [query getObjectInBackgroundWithId:modal.groupId block:^(PFObject *userStats, NSError *error) {
                 if (error) {
                     NSLog(@"Data not available insert userdetails");
                     [SVProgressHUD dismiss];
@@ -823,49 +768,9 @@
                     [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                         if (!error) {
                             NSString*countstring=[NSString stringWithFormat:@"%@",userStats[@"MemberCount"]];
-                            if ([countstring isEqualToString:@"20"]) {
-                                PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-                                [query1 whereKey:@"MobileNo" containedIn:modal.groupAdminArray];
-                                
-                                [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                                    for (PFObject *userStats in objects) {
-                                        
-                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
-                                        userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
-                                        userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
-                                        [userStats saveInBackground];
-                                    }
-                                    
-                                    
-                                }];
-                                
-                                
-                            }
-                            else if([countstring isEqualToString:@"50"])
-                            {PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
-                                [query1 whereKey:@"MobileNo" containedIn:modal.groupAdminArray];
-                                
-                                [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                                    for (PFObject *userStats in objects) {
-                                        
-                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:2000]];
-                                        userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
-                                        userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
-                                        [userStats saveInBackground];
-                                    }
-                                    
-                                    
-                                }];
-                                
-                                
-                            }
-                            
                             
                             PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-                            [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-                            
-                            [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
-                            [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
+                            [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *object, NSError *error) {
                                 if (error) {
                                     NSLog(@"Data not available insert userdetails");
                                     [SVProgressHUD dismiss];
@@ -873,19 +778,55 @@
                                     
                                 } else {
                                     if (unquieArray.count==0) {
-                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
+                                        [object incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
                                     }
                                     else{
-                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:100]];
+                                        [object incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:100]];
                                     }
-                                    mygroup=userStats[@"MyGroupArray"];
+                                    mygroup=object[@"MyGroupArray"];
                                     [mygroup addObject:modal.groupId];
-                                    userStats[@"MyGroupArray"]=mygroup;
-                                    userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
-                                    userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
-                                    [userStats saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                                    object[@"MyGroupArray"]=mygroup;
+                                    object[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                                    object[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                                    [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                         if (!error) {
-                                             [self godetailsScreen];
+                                            [self godetailsScreen];
+                                            if ([countstring isEqualToString:@"20"]) {
+                                                PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
+                                                [query1 whereKey:@"MobileNo" containedIn:modal.groupAdminArray];
+                                                
+                                                [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                                                    for (PFObject *userStats in objects) {
+                                                        
+                                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:1000]];
+                                                        userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                                                        userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                                                        [userStats saveInBackground];
+                                                    }
+                                                    
+                                                    
+                                                }];
+                                                
+                                                
+                                            }
+                                            else if([countstring isEqualToString:@"50"])
+                                            {PFQuery *query1 = [PFQuery queryWithClassName:@"UserDetails"];
+                                                [query1 whereKey:@"MobileNo" containedIn:modal.groupAdminArray];
+                                                
+                                                [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                                                    for (PFObject *userStats in objects) {
+                                                        
+                                                        [userStats incrementKey:@"Badgepoint" byAmount:[NSNumber numberWithInt:2000]];
+                                                        userStats[@"UpdateImage"]=[NSNumber numberWithBool:NO];
+                                                        userStats[@"UpdateName"]=[NSNumber numberWithBool:NO];
+                                                        [userStats saveInBackground];
+                                                    }
+                                                    
+                                                    
+                                                }];
+                                                
+                                                
+                                            }
                                             
                                         }
                                     }];
@@ -893,23 +834,26 @@
                                 }
                             }];
                             
+                            
+                 
+                            
+                     
+                            
+                        }
+                        else{
+                            [SVProgressHUD dismiss];
                         }
                     }];
                     
                 }
-            }];
-            
-        }
-    }];
+           }];
 }
 -(void)godetailsScreen
 {
    
     PFQuery *query = [PFQuery queryWithClassName:@"UserDetails"];
-    [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    [query whereKey:@"CountryName" equalTo:sharedObj.AccountCountry];
     
-    [query  getFirstObjectInBackgroundWithBlock:^(PFObject * userStats, NSError *error) {
+    [query getObjectInBackgroundWithId:sharedObj.userId block:^(PFObject *userStats, NSError *error) {
         if (error) {
             NSLog(@"Data not available insert userdetails");
             [SVProgressHUD dismiss];
@@ -925,30 +869,7 @@
                 modal = [sharedObj.NearByGroupArray objectAtIndex:indexval];
                 
             }
-            PFObject *testObject = [PFObject objectWithClassName:@"GroupFeed"];
-            testObject[@"PostStatus"]=@"Active";
-            
-            testObject[@"GroupId"]=modal.groupId;
-            testObject[@"MemberName"]=sharedObj.AccountName;
-            testObject[@"MobileNo"]=sharedObj.AccountNumber;
-            testObject[@"PostType"]=@"Member";
-            testObject[@"MemberImage"]=userimage;
-            
-            testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined in this group",sharedObj.AccountName];
-            testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
-            testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
-            testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
-            testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
-            testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
-            testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
-            testObject[@"FeedLocation"]=point;
-            PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-            
-            testObject[@"UserId"]=pointer;
-            [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                testObject[@"FeedupdatedAt"]=testObject.updatedAt;
-                [testObject saveInBackground];
-            }];
+           
           
             
             myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
@@ -995,7 +916,7 @@
     {
         if (buttonIndex == 1)
         {
-            
+            [SVProgressHUD dismiss];
             GroupModalClass *modal;
             if (sharedObj.search) {
                 modal = [sharedObj.searchNearby objectAtIndex:indexval];
@@ -1011,10 +932,8 @@
                 testObject[@"PostStatus"]=@"Active";
                 
                 testObject[@"GroupId"]=modal.groupId;
-                testObject[@"MemberName"]=sharedObj.AccountName;
                 testObject[@"MobileNo"]=sharedObj.AccountNumber;
                 testObject[@"PostType"]=@"Invitation";
-                testObject[@"MemberImage"]=userimage;
                 PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
                 
                 testObject[@"UserId"]=pointer;

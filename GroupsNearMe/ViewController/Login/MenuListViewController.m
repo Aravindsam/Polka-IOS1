@@ -213,6 +213,7 @@
   
      
         PendingInviteViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"PendingInviteViewController"];
+        settingsViewController.callservice=YES;
         [[self navigationController]pushViewController:settingsViewController animated:YES];
         NSArray *controllers = [NSArray arrayWithObject:settingsViewController];
         UINavigationController *navigationController = self.menuContainerViewController.centerViewController;
