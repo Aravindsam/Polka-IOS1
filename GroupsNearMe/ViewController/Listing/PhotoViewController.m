@@ -30,6 +30,8 @@
                                                object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(CallPhotoService) name:@"TAPPHOTO" object:nil];
     [self.photoCollectionView registerClass:[ImageCollectionViewCell class] forCellWithReuseIdentifier:@"TopsListCell"];
+    [self.photoCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
+
     refreshControl = [[UIRefreshControl alloc] init];
     refreshControl.tintColor = [UIColor grayColor];
 
@@ -79,10 +81,18 @@
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout  *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (sharedObj.photoObjectArray.count==0) {
+        return CGSizeMake(_photoCollectionView.frame.size.width-40, 80.0);
+    }
+    else
     return CGSizeMake(93.0, 93.0);
 }
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (sharedObj.photoObjectArray.count==0) {
+        return 1;
+    }
+    else
     return  sharedObj.photoObjectArray.count;
 }
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -92,6 +102,12 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (sharedObj.photoObjectArray.count==0) {
+        UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"Cell" forIndexPath:indexPath];
+        [cell.contentView addSubview:_noresultlabel];
+        return cell;
+    }
+    else{
     ImageCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"TopsListCell" forIndexPath:indexPath];
     PFObject*photo=[sharedObj.photoObjectArray objectAtIndex:indexPath.item];
     PFFile *imgfile=photo[@"ThumbnailPicture"];
@@ -110,6 +126,7 @@
 //   [cell.photoImageView setContentMode:UIViewContentModeCenter];
 //    cell.photoImageView.clipsToBounds=YES;
     return cell;
+    }
 }
 -(UIImage *)squareAndSmall :(UIImage*)oringinalimage{
     // fromCleverError's original

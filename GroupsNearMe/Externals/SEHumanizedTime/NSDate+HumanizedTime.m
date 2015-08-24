@@ -159,7 +159,11 @@
       {
         if (daysDiff > 0 && daysDiff <= 4)
         {
-          return [dayFormatter stringFromDate:self];
+          //return [dayFormatter stringFromDate:self];
+            return (fullStrings)? full_dayString : dayString;
+ 
+            
+            
         }
         else if (daysDiff > 4)
         {
