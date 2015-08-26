@@ -35,6 +35,13 @@
     _Menulist_tableview.separatorStyle=UITableViewCellSeparatorStyleNone;
     menuimageArray=[NSArray arrayWithObjects:@"profile.png",@"create.png",@"pending.png",@"settings.png",@"",@"",@"",@"", nil];
     menuArray=[NSArray arrayWithObjects:@"My Profile",@"Create Group",@"Pending Invites",@"Settings",@"Terms of Service",@"Privacy Policy",@"Policies and Guidelines",@"Contact Us", nil];
+    
+    NSDictionary *infoDictionary = [[NSBundle mainBundle]infoDictionary];
+    
+   // NSString *version = infoDictionary[@"CFBundleShortVersionString"];
+    NSString *build = infoDictionary[(NSString*)kCFBundleVersionKey];
+    //NSString *bundleName = infoDictionary[(NSString *)kCFBundleNameKey];
+    _versionlabel.text=[NSString stringWithFormat:@"Version  : %@",build];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(updateprof) name:@"UPDATE PROFILE" object:nil];
       [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callHomeMethod) name:@"CALLHOME" object:nil];
       [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(callcreateMethod) name:@"CALLCREATE" object:nil];

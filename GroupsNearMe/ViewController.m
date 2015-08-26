@@ -58,6 +58,16 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     
+//    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
+//    [inputDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+//    [inputDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+//    [inputDateFormatter setLocale:[NSLocale systemLocale]];
+//    NSDate *inputDate=[inputDateFormatter dateFromString:@"2015-08-25T13:21:38.721Z"];
+//    
+//    NSString *timestamp = [inputDate stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
+//    
+//    NSLog(@"TIME DIFF %@",timestamp);
+   
     
     //Customise UiTabbar
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -317,10 +327,12 @@
     
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
     [inputDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-    
+[inputDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];    [inputDateFormatter setLocale:[NSLocale systemLocale]];
     NSDate *inputDate=[inputDateFormatter dateFromString:[temp objectForKey:@"Time"]];
     
-
+    NSLog(@"TIME %@",[temp objectForKey:@"Time"]);
+    NSLog(@"DATE %@",inputDate);
+    
     NSString *timestamp = [inputDate stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
     cell.timelabel.text=timestamp;
     

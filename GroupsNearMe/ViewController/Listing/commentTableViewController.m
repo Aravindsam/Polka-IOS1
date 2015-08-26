@@ -643,28 +643,12 @@
             int heightimg=[sharedObj.feedObject[@"ImageHeight"]intValue];
 
            
-//                if(heightimg>widthimg)
-//                {
-//                    int difference=heightimg-widthimg;
+
            
             double aspectratio=(double)heightimg/widthimg;
-            double difference=aspectratio*(self.tableView.frame.size.width-40);
-//                    //int difference=(widthimg*heightimg)/widthimg;
-//            if(heightimg>widthimg)
-//            {
-                         tableHeight= label.frame.size.height+145+difference;
-//            }
-//            else if(heightimg==widthimg)
-//            {
-//                tableHeight= label.frame.size.height+145+280;
-//
-//            }
-//            else
-//            {
-//                tableHeight= label.frame.size.height+145+240;
-//
-//            }
+            double difference=aspectratio*(self.tableView.frame.size.width-24);
 
+                         tableHeight= label.frame.size.height+145+difference;
             
            
 

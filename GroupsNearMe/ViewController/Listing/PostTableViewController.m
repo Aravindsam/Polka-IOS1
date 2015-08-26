@@ -1097,8 +1097,9 @@
 }
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
-
+    [SVProgressHUD dismiss];
         if ([sharedObj connected]) {
+            
             if (self.objects.count==0) {
                 [self callService];
             }
@@ -1654,7 +1655,7 @@
 
             
             double aspectratio=(double)heightimg/widthimg;
-             double difference=aspectratio*(self.tableView.frame.size.width-20);
+             double difference=aspectratio*(self.tableView.frame.size.width-24);
 
                 if (animal == NULL || animal.length ==0)
                 {
@@ -1776,6 +1777,7 @@
 
 
 - (PFQuery *)queryForTable {
+    [SVProgressHUD show];
     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
     [query whereKey:@"GroupId" equalTo:[Generic sharedMySingleton].GroupId];
     [query includeKey:@"UserId"];

@@ -19,4 +19,5 @@
 @property (strong, nonatomic) IBOutlet UILabel *namelabel;
 @property (strong, nonatomic) IBOutlet PFImageView *profileimageview;
 @property (strong, nonatomic) IBOutlet UITableView *Menulist_tableview;
+@property (strong, nonatomic) IBOutlet UILabel *versionlabel;
 @end

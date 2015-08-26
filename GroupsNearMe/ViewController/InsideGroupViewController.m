@@ -248,13 +248,9 @@
         self.selectedViewController = fabViewController;
         
     } else if (item == hotTabBarItem) {
-        if (tabBar.selectedItem==hotTabBarItem) {
-            
-        }
-        else
-        {
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
-        }
+       
+        //[[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
+        
         UIViewController *moreViewController = [viewControllers objectAtIndex:1];
         [self.selectedViewController.view removeFromSuperview];
         [self.tabview addSubview:moreViewController.view];

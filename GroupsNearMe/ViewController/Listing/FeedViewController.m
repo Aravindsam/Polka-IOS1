@@ -816,9 +816,9 @@
                 if (succeeded) {
                     NSArray *temp=[[NSArray alloc]initWithObjects:postObject, nil];
                     [PFObject pinAllInBackground:temp withName:sharedObj.GroupId block:^(BOOL succeeded, NSError *error) {
-                        
+                            [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
                         [self.wallPostsTableViewController postWasCreated];
-                        [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
+                    
                     }];
                     
                     PFQuery *ownerquery=[PFQuery queryWithClassName:@"UserDetails"];

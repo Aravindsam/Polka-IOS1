@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "CommentViewController.h"
 #import "ImageCollectionViewCell.h"
+#import "SVProgressHUD.h"
 @interface PhotoViewController ()
 
 @end
@@ -40,13 +41,14 @@
     [self.photoCollectionView addSubview:refreshControl];
     self.photoCollectionView.alwaysBounceVertical = YES;
     [self.photoCollectionView setBackgroundColor:[UIColor clearColor]];
-    [self CallPhotoService];
+     [self CallPhotoService];
+    
     // Do any additional setup after loading the view.
 }
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
    
    }
 -(void)CallPhotoService
@@ -56,16 +58,18 @@
     [photoArray removeAllObjects];
     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
     [query whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+    [query setLimit:20];
     [query whereKey:@"PostType" equalTo:@"Image"];
     [query whereKey:@"PostStatus" equalTo:@"Active"];
     [query orderByDescending:@"updatedAt"];
     [query fromLocalDatastore];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         for (PFObject*imageObject in objects) {
-            PFFile *imgfile=imageObject[@"ThumbnailPicture"];
+            PFFile *imgfile=imageObject[@"Postimage"];
             [photoArray addObject:imgfile.url];
             sharedObj.photoObjectArray=[NSMutableArray arrayWithArray:objects];
         }
+        
         if (photoArray.count==0) {
             _noresultlabel.hidden=NO;
             _photoCollectionView.hidden=NO;

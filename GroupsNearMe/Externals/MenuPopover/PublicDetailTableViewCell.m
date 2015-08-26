@@ -203,7 +203,7 @@
         flagbtn.frame=CGRectMake(postView.frame.size.width-40, 0, 40, 40);
         if (textvalLabel.hidden) {
             
-               postImageview.frame=CGRectMake(10, [self findViewHeight:toplinelabel.frame]+8, self.postView.frame.size.width-20, self.postView.frame.size.height-150);
+               postImageview.frame=CGRectMake(2, [self findViewHeight:toplinelabel.frame]+8, self.postView.frame.size.width-4, self.postView.frame.size.height-150);
             
             pointlabel.frame=CGRectMake(10, [self findViewHeight:postImageview.frame]+5,postView.frame.size.width-70, 30);
         }
@@ -211,7 +211,7 @@
         {
             textvalLabel.frame=CGRectMake(10, [self findViewHeight:toplinelabel.frame]+5,postView.frame.size.width-20,postView.frame.size.height-(170+self.postView.frame.size.height-210));
             [self findFrameFromString:textvalLabel.text andCorrespondingLabel:textvalLabel];
-            postImageview.frame=CGRectMake(10, [self findViewHeight:textvalLabel.frame], self.postView.frame.size.width-20, self.postView.frame.size.height-(90+[self findViewHeight:textvalLabel.frame]));
+            postImageview.frame=CGRectMake(2, [self findViewHeight:textvalLabel.frame], self.postView.frame.size.width-4, self.postView.frame.size.height-(90+[self findViewHeight:textvalLabel.frame]));
             pointlabel.frame=CGRectMake(10, [self findViewHeight:postImageview.frame]+5,postView.frame.size.width-70, 30);
         }
      
