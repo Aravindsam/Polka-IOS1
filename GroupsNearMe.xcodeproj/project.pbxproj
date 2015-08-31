@@ -146,6 +146,7 @@
 		C670536C1B4BFF5200899D30 /* new post.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C670536B1B4BFF5200899D30 /* new post.jpg */; };
 		C6732DDE1AEE6A930042443B /* commentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6732DDD1AEE6A930042443B /* commentTableViewController.m */; };
 		C6732DE11AEE6B500042443B /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C6732DE01AEE6B500042443B /* CommentTableViewCell.m */; };
+		C675B0531B8D9AEE00355516 /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C675B0521B8D9AEE00355516 /* NotificationViewController.m */; };
 		C67C88681B25600F009BE3CB /* MemberDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C67C88671B25600F009BE3CB /* MemberDetailViewController.m */; };
 		C67C886B1B257233009BE3CB /* MemberModalclass.m in Sources */ = {isa = PBXBuildFile; fileRef = C67C886A1B257233009BE3CB /* MemberModalclass.m */; };
 		C67C88701B257BC6009BE3CB /* GroupMemberTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C67C886F1B257BC6009BE3CB /* GroupMemberTableViewCell.m */; };
@@ -438,6 +439,8 @@
 		C6732DDD1AEE6A930042443B /* commentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = commentTableViewController.m; sourceTree = "<group>"; };
 		C6732DDF1AEE6B500042443B /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
 		C6732DE01AEE6B500042443B /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
+		C675B0511B8D9AEE00355516 /* NotificationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationViewController.h; sourceTree = "<group>"; };
+		C675B0521B8D9AEE00355516 /* NotificationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationViewController.m; sourceTree = "<group>"; };
 		C67C88661B25600F009BE3CB /* MemberDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberDetailViewController.h; sourceTree = "<group>"; };
 		C67C88671B25600F009BE3CB /* MemberDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberDetailViewController.m; sourceTree = "<group>"; };
 		C67C88691B257233009BE3CB /* MemberModalclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberModalclass.h; sourceTree = "<group>"; };
@@ -957,6 +960,8 @@
 				C65228FF1B42935000CEF4DC /* SettingViewController.m */,
 				C6A835081B43FE5D00453342 /* StarViewController.h */,
 				C6A835091B43FE5D00453342 /* StarViewController.m */,
+				C675B0511B8D9AEE00355516 /* NotificationViewController.h */,
+				C675B0521B8D9AEE00355516 /* NotificationViewController.m */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -1487,6 +1492,7 @@
 				C69860DC1AFCB96D00DA77EA /* ContactUsViewController.m in Sources */,
 				C6732DDE1AEE6A930042443B /* commentTableViewController.m in Sources */,
 				C63513A41AEA6CF8002FDE2F /* MFSideMenuContainerViewController.m in Sources */,
+				C675B0531B8D9AEE00355516 /* NotificationViewController.m in Sources */,
 				C620DB861AEFCBC6008DC5BA /* UIImage+RoundedCornerAdditions.m in Sources */,
 				C62E37041AD93EA400BF808B /* Annotation.m in Sources */,
 				C669F0F71ADE350000416EDF /* ASIHTTPRequest.m in Sources */,

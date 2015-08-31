@@ -45,6 +45,8 @@
         [member whereKey:@"GroupId" equalTo:sharedObj.GroupId];
         [member whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
         [member whereKey:@"MemberStatus" equalTo:@"Active"];
+        [member includeKey:@"UserId"];
+
         [member findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             for (PFObject *memobj in objects) {
                 memobj[@"UnreadMsgCount"]=[NSNumber numberWithInt:0];

@@ -24,7 +24,7 @@
     sharedobj=[Generic sharedMySingleton];
     humanizedType = NSDateHumanizedSuffixAgo;
 
-
+    _mygroupTableview.hidden=YES;
     sharedobj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     lastupdate=[[NSUserDefaults standardUserDefaults] objectForKey:@"LASTUPDATED"];
     mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
@@ -79,20 +79,9 @@
         });
     }];
    
-
-    if (sharedobj.MyGroupArray.count!=0) {
-        [_mygroupTableview setHidden:NO];
-        [_noresultView setHidden:YES];
-        [self.mygroupTableview reloadData];
-               
-        
-    }
-    else
-    {
-        [_mygroupTableview setHidden:NO];
-        [_noresultView setHidden:NO];
-    }
+    _noresultView.hidden=YES;
     
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(doSomething)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
@@ -181,6 +170,8 @@
         [message whereKey:@"GroupId" equalTo:modal.groupId];
         [message whereKey:@"MemberNo" equalTo:sharedobj.AccountNumber];
         [message whereKey:@"MemberStatus" equalTo:@"Active"];
+        [message includeKey:@"UserId"];
+
         [message findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (error) {
                 NSLog(@"error in geo query!"); // todo why is this ever happening?
@@ -202,13 +193,14 @@
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
                     
-                    [self.mygroupTableview reloadData];
                 }
                 else
                 {
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:NO];
                 }
+                    [self.mygroupTableview reloadData];
+
                 }
             }
         }];
@@ -227,13 +219,14 @@
                 if (sharedobj.MyGroupArray.count!=0) {
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
-                    [self.mygroupTableview reloadData];
+                   
                 }
                 else
                 {
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:NO];
                 }
+                 [self.mygroupTableview reloadData];
             }
         }
        
@@ -241,6 +234,7 @@
 }
 -(void)CallMyService:(BOOL)update
 {
+    _mygroupTableview.hidden=YES;
     mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
     [myquery whereKey:@"objectId" containedIn:mygroupIDArray];
@@ -291,9 +285,8 @@
                     
                                    }
                 if (sharedobj.MyGroupArray.count!=0) {
-                    [_mygroupTableview setHidden:NO];
+//                    [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
-                    [self.mygroupTableview reloadData];
 
                    
                 }
@@ -302,8 +295,9 @@
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:NO];
                 }
-                
+                [self.mygroupTableview reloadData];
 
+                 _mygroupTableview.hidden=NO;
                 [self updateunreadmsg];
               
                 
@@ -318,13 +312,14 @@
 
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:YES];
-                    [self.mygroupTableview reloadData];
                 }
                 else
                 {
                     [_mygroupTableview setHidden:NO];
                     [_noresultView setHidden:NO];
                 }
+                [self.mygroupTableview reloadData];
+                _mygroupTableview.hidden=NO;
 
             }
         }
@@ -344,17 +339,32 @@
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    
+    if (sharedobj.MyGroupArray.count==0) {
+        return 1;
+    }
+    else{
     if (sharedobj.search) {
         return sharedobj.searchmygroup.count;
     }
     else
     return sharedobj.MyGroupArray.count;
-    
+    }
     
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+     if (sharedobj.MyGroupArray.count==0) {
+         static NSString *CellIdentifier = @"Cell";
+         
+         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+         if (cell == nil) {
+             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+         }
+         [cell.contentView addSubview:_noresultView];
+         return cell;
+     }
+     else{
     static NSString *CellIdentifier = @"Cell";
     
     MyGroupTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -468,12 +478,14 @@
     
     
     return cell;
-    
+     }
     
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    if (sharedobj.MyGroupArray.count==0) {
+    }
+    else{
        GroupModalClass *modal ;
     if (sharedobj.search) {
            modal = [sharedobj.searchmygroup objectAtIndex:indexPath.row];
@@ -507,11 +519,15 @@
     AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
         [delegate.navigationController pushViewController:settingsViewController animated:YES];
       
-  
+    }
  
    
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (sharedobj.MyGroupArray.count==0) {
+        return 80;
+    }
+    else
     return (_mygroupTableview.frame.size.height/6);
 }
 

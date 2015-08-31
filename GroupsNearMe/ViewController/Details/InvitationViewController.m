@@ -23,6 +23,7 @@
     sharedObj=[Generic sharedMySingleton];
     humanizedType = NSDateHumanizedSuffixAgo;
     sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
+    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
 
     groupMembers=[[NSMutableArray alloc]init];
     adminArray=[[NSMutableArray alloc]init];
@@ -68,9 +69,12 @@
     }
     else{
     PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
+        [query1 includeKey:@"UserId"];
+
     [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
     [query1 whereKey:@"PostType" equalTo:@"Invitation"];
     [query1 whereKey:@"PostStatus" equalTo:@"Active"];
+         [query1 includeKey:@"UserId"];
     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         sharedObj.invitationObjectArray=[NSMutableArray arrayWithArray:objects];
         NSUserDefaults *us = [NSUserDefaults standardUserDefaults];
@@ -384,6 +388,8 @@
                             if (!error) {
                                 
                                 PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                                [query includeKey:@"UserId"];
+
                                 [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                                 [query whereKey:@"objectId" equalTo:feed.objectId];
                                 [query getObjectInBackgroundWithId:feed.objectId
@@ -476,6 +482,8 @@
                                 
                                 PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
                                 [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
+                                [query includeKey:@"UserId"];
+
                                 [query whereKey:@"objectId" equalTo:feed.objectId];
                                 
                                 [query getObjectInBackgroundWithId:feed.objectId
@@ -570,6 +578,7 @@
                 PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
                 [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                 [query whereKey:@"objectId" equalTo:feed.objectId];
+                [query includeKey:@"UserId"];
 
                 [query getObjectInBackgroundWithId:feed.objectId
                                              block:
@@ -628,6 +637,7 @@
             PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
             [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
             [query whereKey:@"objectId" equalTo:feed.objectId];
+            [query includeKey:@"UserId"];
 
             [query getObjectInBackgroundWithId:feed.objectId
                                          block:
@@ -709,6 +719,8 @@
                                     [sharedObj.invitationObjectArray removeAllObjects];
                                     PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
                                     [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                                    [query1 includeKey:@"UserId"];
+
                                     [query1 whereKey:@"PostType" equalTo:@"Invitation"];
                                     [query1 whereKey:@"PostStatus" equalTo:@"Active"];
                                     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -748,6 +760,8 @@
                                     [sharedObj.invitationObjectArray removeAllObjects];
                                     PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
                                     [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                                    [query1 includeKey:@"UserId"];
+
                                     [query1 whereKey:@"PostType" equalTo:@"Invitation"];
                                     [query1 whereKey:@"PostStatus" equalTo:@"Active"];
                                     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -788,6 +802,8 @@
                                     [sharedObj.invitationObjectArray removeAllObjects];
                                     PFQuery *query1 = [PFQuery queryWithClassName:@"GroupFeed"];
                                     [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                                    [query1 includeKey:@"UserId"];
+
                                     [query1 whereKey:@"PostType" equalTo:@"Invitation"];
                                     [query1 whereKey:@"PostStatus" equalTo:@"Active"];
                                     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -827,6 +843,8 @@
         [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
         [query1 whereKey:@"PostType" equalTo:@"Invitation"];
         [query1 whereKey:@"PostStatus" equalTo:@"Active"];
+        [query1 includeKey:@"UserId"];
+
         [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (!error) {
                 sharedObj.invitationObjectArray=[NSMutableArray arrayWithArray:objects];

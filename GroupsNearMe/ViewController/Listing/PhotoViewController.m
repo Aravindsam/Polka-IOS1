@@ -43,6 +43,10 @@
     [self.photoCollectionView setBackgroundColor:[UIColor clearColor]];
      [self CallPhotoService];
     
+    if([self respondsToSelector:@selector(setAutomaticallyAdjustsScrollViewInsets:)])
+    {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
     // Do any additional setup after loading the view.
 }
 -(void)viewWillAppear:(BOOL)animated
@@ -57,6 +61,8 @@
     [sharedObj.photoObjectArray removeAllObjects];
     [photoArray removeAllObjects];
     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+    [query includeKey:@"UserId"];
+
     [query whereKey:@"GroupId" equalTo:sharedObj.GroupId];
     [query setLimit:20];
     [query whereKey:@"PostType" equalTo:@"Image"];
@@ -86,7 +92,7 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout  *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (sharedObj.photoObjectArray.count==0) {
-        return CGSizeMake(_photoCollectionView.frame.size.width-40, 80.0);
+        return CGSizeMake(_photoCollectionView.frame.size.width, 80.0);
     }
     else
     return CGSizeMake(93.0, 93.0);
@@ -103,7 +109,13 @@
 {
     return 1;
 }
-
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
+    if (sharedObj.photoObjectArray.count==0)
+        return UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
+    
+    else
+        return UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0);
+}
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (sharedObj.photoObjectArray.count==0) {

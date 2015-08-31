@@ -49,11 +49,11 @@
 }
 -(void)findFrameFromString:(NSString*)string andCorrespondingLabel:(UILabel*) label1
 {
-    CGSize expectedLableSize =[string sizeWithFont:label1.font constrainedToSize:label1.frame.size lineBreakMode:NSLineBreakByCharWrapping];
+    CGSize expectedLableSize =[string sizeWithFont:label1.font constrainedToSize:label1.frame.size lineBreakMode:NSLineBreakByWordWrapping];
     CGRect newFrame =  label1.frame;
     newFrame.size.height = expectedLableSize.height;
     label1.frame =newFrame;
-    label1.lineBreakMode = NSLineBreakByCharWrapping;
+    label1.lineBreakMode = NSLineBreakByWordWrapping;
     label1.numberOfLines=0;
     [label1 sizeToFit];
     

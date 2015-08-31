@@ -45,10 +45,14 @@
     [locationManager startUpdatingLocation];
         _FullimageView.hidden=YES;
        sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
-   
-           PFFile *imageFile =[sharedObj.feedObject objectForKey:@"Postimage"];
-    _fullimgView.file=imageFile;
-    [_fullimgView loadInBackground];
+    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
+
+    if ([[sharedObj.feedObject objectForKey:@"PostType"] isEqualToString:@"Image"]) {
+        PFFile *imageFile =[sharedObj.feedObject objectForKey:@"Postimage"];
+        _fullimgView.file=imageFile;
+        [_fullimgView loadInBackground];
+    }
+    
     _groupimageview.file=sharedObj.groupimageurl;
     [_groupimageview loadInBackground];
     _groupnamelabel.text=sharedObj.GroupName;
@@ -198,6 +202,8 @@
         if (succeeded) {
                   [self.wallPostsTableViewController postWasCreated];
             PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+            [query includeKey:@"UserId"];
+
             [query whereKey:@"GroupId" equalTo:sharedObj.GroupId];
             
         

@@ -237,11 +237,7 @@
            flagUserArray=sharedObj.feedObject[@"FlagArray"];
 
            if ([sharedObj.groupType isEqualToString:@"Public"]) {
-//               self.timeIntervalFormatter = [[TTTTimeIntervalFormatter alloc] init];
-//               [_timeIntervalFormatter setLocale:[NSLocale currentLocale]];
-//
-//               NSTimeInterval timeInterval = [[sharedObj.feedObject createdAt] timeIntervalSinceNow];
-//               NSString *timestamp = [self.timeIntervalFormatter stringForTimeInterval:timeInterval];
+
                NSString*timestamp=[[sharedObj.feedObject createdAt] stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
 
 
@@ -400,12 +396,12 @@
                cell.flagbtn.hidden=YES;
                cell.profileimageview.hidden=NO;
                cell.profilenamelabel.hidden=NO;
-             
-                   cell.profilenamelabel.text=sharedObj.feedObject[@"UserId"][@"UserName"];
-                   PFFile*imagefile=sharedObj.feedObject[@"UserId"][@"ThumbnailPicture"];
+               cell.profilenamelabel.text=[sharedObj.feedObject objectForKey:@"UserId"][@"UserName"];
+               
+                   PFFile*imagefile=[sharedObj.feedObject objectForKey:@"UserId"][@"ThumbnailPicture"];
                    cell.profileimageview.file=imagefile;
                [cell.profileimageview loadInBackground];
-                   currentuserMobileNo=sharedObj.feedObject[@"UserId"][@"MobileNo"];
+                   currentuserMobileNo=[sharedObj.feedObject objectForKey:@"UserId"][@"MobileNo"];
                    if ([sharedObj.AccountNumber isEqualToString:currentuserMobileNo]) {
                        if ([sharedObj.feedObject[@"PostType"] isEqualToString:@"Invitation"]||[sharedObj.feedObject[@"PostType"] isEqualToString:@"Member"])
                        {
@@ -758,6 +754,8 @@
     [query whereKey:@"FeedId" equalTo:feed.objectId];
     [query whereKey:@"FeedType" equalTo:@"Like"];
     [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
+    [query includeKey:@"UserId"];
+
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
             if (object[@"upVote"]) {
@@ -768,6 +766,7 @@
                     }
                     if (succeeded) {
                         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                           [query includeKey:@"UserId"];
                         [query whereKey:@"objectId" equalTo:feed.objectId];
                         [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                         [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -823,6 +822,8 @@
                     }
                     if (succeeded) {
                         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                        [query includeKey:@"UserId"];
+
                         [query whereKey:@"objectId" equalTo:feed.objectId];
                         [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                         [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -897,6 +898,8 @@
                 }
                 if (succeeded) {
                     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                    [query includeKey:@"UserId"];
+
                     [query whereKey:@"objectId" equalTo:feed.objectId];
                     [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                     [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -942,7 +945,8 @@
     [query whereKey:@"FeedId" equalTo:feed.objectId];
     [query whereKey:@"FeedType" equalTo:@"Like"];
     [query whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
-    
+    [query includeKey:@"UserId"];
+
     [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (!error) {
             
@@ -954,6 +958,8 @@
                     }
                     if (succeeded) {
                         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                        [query includeKey:@"UserId"];
+
                         [query whereKey:@"objectId" equalTo:object[@"FeedId"]];
                         [query whereKey:@"GroupId" equalTo:object[@"GroupId"]];
                         [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -1009,6 +1015,8 @@
                     }
                     if (succeeded) {
                         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                        [query includeKey:@"UserId"];
+
                         [query whereKey:@"objectId" equalTo:object[@"FeedId"]];
                         [query whereKey:@"GroupId" equalTo:object[@"GroupId"]];
                         [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -1083,6 +1091,8 @@
                 }
                 if (succeeded) {
                     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+                    [query includeKey:@"UserId"];
+
                     [query whereKey:@"objectId" equalTo:feed.objectId];
                     [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                     [query whereKey:@"PostStatus" equalTo:@"Active"];
@@ -1157,6 +1167,8 @@
     if (buttonIndex==1) {
         PFObject *feed = sharedObj.feedObject;
         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
+        [query includeKey:@"UserId"];
+
         [query whereKey:@"PostStatus" equalTo:@"Active"];
         [query getObjectInBackgroundWithId:feed.objectId
                                      block:
@@ -1168,6 +1180,8 @@
                                   PFQuery *activityQuery=[PFQuery queryWithClassName:@"Activity"];
                                   [activityQuery whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
                                   [activityQuery whereKey:@"FeedId" equalTo:feed.objectId];
+                     [activityQuery includeKey:@"UserId"];
+
                                   [activityQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                       if (objects.count!=0) {
                                           [PFObject deleteAllInBackground:objects];
@@ -1209,6 +1223,8 @@
             [query whereKey:@"objectId" equalTo:feed.objectId];
             [query whereKey:@"GroupId" equalTo:feed[@"GroupId"]];
             [query whereKey:@"PostStatus" equalTo:@"Active"];
+            [query includeKey:@"UserId"];
+
             [query getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error){
                 if (error) {
                 }

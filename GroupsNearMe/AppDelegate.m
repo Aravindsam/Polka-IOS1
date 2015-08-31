@@ -145,6 +145,7 @@
     if (application.applicationState == UIApplicationStateInactive) {
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"NOTIFICATION" object:nil];
     NSString*typenotification =userInfo[@"Type"];
     NSDictionary *aps = userInfo[@"aps"];
     NSMutableArray *notifications=[[NSMutableArray alloc]initWithObjects:nil];
@@ -169,6 +170,8 @@
            
         }
         [[NSUserDefaults standardUserDefaults]setObject:notifications forKey:@"NOTIFICATIONLIST"];
+        
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"reloadNotification" object:nil];
     }
     }
     

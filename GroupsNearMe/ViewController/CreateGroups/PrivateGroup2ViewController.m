@@ -324,6 +324,54 @@
     _visibilitylabel.text=[NSString stringWithFormat:@"%d",radiusVisibilty];
 
 }
+-(NSData *)compressImage:(UIImage *)imagedata{
+    NSData *imageData1 = [[NSData alloc] initWithData:UIImageJPEGRepresentation((imagedata), 1.0)];
+    
+    int imageSize = (int)imageData1.length;
+    NSLog(@"SIZE OF IMAGE: %i ", imageSize);
+    float compressionQuality;//50 percent compression
+    
+    if (imageSize < 200000) {
+        compressionQuality=1.0;
+    }
+    else if (imageSize < 500000 && imageSize > 200000)
+    {
+        compressionQuality=0.9;
+    }
+    else if (imageSize < 1000000 && imageSize > 500000)
+    {
+        compressionQuality=0.8;
+    }
+    else if (imageSize < 5000000 && imageSize>2000000)
+    {
+        compressionQuality=0.6;
+    }
+    else if (imageSize < 6000000 && imageSize>5000000)
+    {
+        compressionQuality=0.4;
+        
+    }
+    else if (imageSize>6000000)
+    {
+        compressionQuality=0.3;
+    }
+    else
+    {
+        compressionQuality=0.5;
+    }
+    
+    
+    
+    
+    CGRect rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
+    UIGraphicsBeginImageContext(rect.size);
+    [imagedata drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return imageData;
+}
+
 - (IBAction)nextbtnClicked:(id)sender
 {
    
@@ -339,7 +387,10 @@
     pointVal = [PFGeoPoint geoPointWithLatitude:centre.latitude longitude:centre.longitude];
     sharedObj.groupLocation=pointVal;
     sharedObj.radiusVisibilityVal=radiusVisibilty;
-    PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:sharedObj.groupimageData];
+    PFFile *imageFile = [PFFile fileWithName:@"groupImage.jpg" data:sharedObj.groupimageData];
+    UIImage *image = [UIImage imageWithData:sharedObj.groupimageData];
+    
+    PFFile *imgFile=[PFFile fileWithName:@"thumbgroup.jpg" data:[self compressImage:image]];
     groupimgurl=imageFile;
     
             PFObject *testObject = [PFObject objectWithClassName:@"Group"];
@@ -347,6 +398,8 @@
             testObject[@"CountryName"]=sharedObj.AccountCountry;
             testObject[@"GroupName"]=sharedObj.GroupName;
             testObject[@"GroupPicture"]=imageFile;
+    testObject[@"ThumbnailPicture"]=imgFile;
+
             testObject[@"GroupDescription"]=sharedObj.groupdescription;
             testObject[@"GroupType"]=@"Private";
             testObject[@"GroupLocation"]=pointVal;

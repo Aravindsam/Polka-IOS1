@@ -237,7 +237,7 @@
 
 - (void)cropViewController:(PECropViewController *)controller didFinishCroppingImage:(UIImage *)croppedImage transform:(CGAffineTransform)transform cropRect:(CGRect)cropRect
 {
-    image = croppedImage;
+    //image = croppedImage;
     _ProfileImageview.image = croppedImage;
     _profilefullimgview.image=croppedImage;
     
@@ -301,7 +301,9 @@
         {
               NSData* data = UIImageJPEGRepresentation(_ProfileImageview.image, 0.8f);
              PFFile *imageFile1 = [PFFile fileWithName:@"profile.png" data:data];
-    
+            UIImage *image1 = [UIImage imageWithData:data];
+            
+            PFFile *imgFile=[PFFile fileWithName:@"thumbuser.jpg" data:[self compressImage:image1]];
             
                 if ([profilename isEqualToString:sharedObj.AccountName]) {
                     gameScore[@"NameChangeCount"]=sharedObj.NameCount;
@@ -317,6 +319,8 @@
                 gameScore[@"UpdateImage"]=[NSNumber numberWithBool:YES];
 
                 gameScore[@"ProfilePicture"] = imageFile1;
+            gameScore[@"ThumbnailPicture"]=imgFile;
+
                 gameScore[@"UserName"]=profilename;
                 [gameScore saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     if (!error) {
@@ -406,6 +410,53 @@
         
     
     
+}
+-(NSData *)compressImage:(UIImage *)imagedata{
+    NSData *imageData1 = [[NSData alloc] initWithData:UIImageJPEGRepresentation((imagedata), 1.0)];
+    
+    int imageSize = (int)imageData1.length;
+    NSLog(@"SIZE OF IMAGE: %i ", imageSize);
+    float compressionQuality;//50 percent compression
+    
+    if (imageSize < 200000) {
+        compressionQuality=1.0;
+    }
+    else if (imageSize < 500000 && imageSize > 200000)
+    {
+        compressionQuality=0.9;
+    }
+    else if (imageSize < 1000000 && imageSize > 500000)
+    {
+        compressionQuality=0.8;
+    }
+    else if (imageSize < 5000000 && imageSize>2000000)
+    {
+        compressionQuality=0.6;
+    }
+    else if (imageSize < 6000000 && imageSize>5000000)
+    {
+        compressionQuality=0.4;
+        
+    }
+    else if (imageSize>6000000)
+    {
+        compressionQuality=0.3;
+    }
+    else
+    {
+        compressionQuality=0.5;
+    }
+    
+    
+    
+    
+    CGRect rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
+    UIGraphicsBeginImageContext(rect.size);
+    [imagedata drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return imageData;
 }
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     

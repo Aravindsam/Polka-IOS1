@@ -81,6 +81,8 @@
     [query1 whereKey:@"GroupId" equalTo:sharedObj.GroupId];
     [query1 whereKey:@"PostType" equalTo:@"Invitation"];
     [query1 whereKey:@"PostStatus" equalTo:@"Active"];
+    [query1 includeKey:@"UserId"];
+
     [query1 findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         invitationcount=(int)objects.count;
     }];
@@ -335,6 +337,8 @@
                 PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                 [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                 [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                [detailsquery includeKey:@"UserId"];
+
                 [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                     
                     PFQuery*group=[PFQuery queryWithClassName:@"Group"];
@@ -348,6 +352,8 @@
                             [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                 
                                 PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                [feedquery includeKey:@"UserId"];
+
                                 [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                 [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                 
@@ -392,6 +398,8 @@
                 [userobj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                     PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                     [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                    [detailsquery includeKey:@"UserId"];
+
                     [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
                     [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         PFObject *obj=[objects objectAtIndex:0];
@@ -403,6 +411,8 @@
                             
                             PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
                             [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                            [feedquery includeKey:@"UserId"];
+
                             [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                             
                             [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -466,6 +476,8 @@
                                         PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                         [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                         [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                                        [detailsquery includeKey:@"UserId"];
+
                                         [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                             PFObject *obj=[objects objectAtIndex:0];
                                             obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -474,6 +486,8 @@
                                             obj[@"MemberStatus"]=@"InActive";
                                             [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                                 PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                                [feedquery includeKey:@"UserId"];
+
                                                 [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                                 [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                                 
@@ -523,6 +537,8 @@
                                         PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                         [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                         [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                                        [detailsquery includeKey:@"UserId"];
+
                                         [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                             PFObject *obj=[objects objectAtIndex:0];
                                             obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -531,6 +547,8 @@
                                             obj[@"MemberStatus"]=@"InActive";
                                             [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                                 PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                                [feedquery includeKey:@"UserId"];
+
                                                 [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                                 [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                                 
@@ -570,6 +588,8 @@
                                     PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                     [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                     [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                                    [detailsquery includeKey:@"UserId"];
+
                                     [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                         PFObject *obj=[objects objectAtIndex:0];
                                         obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -578,6 +598,8 @@
                                         obj[@"MemberStatus"]=@"InActive";
                                         [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                             PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                            [feedquery includeKey:@"UserId"];
+
                                             [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                             [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                             
@@ -639,6 +661,8 @@
                                 PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                 [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                 [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                                [detailsquery includeKey:@"UserId"];
+
                                 [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                     PFObject *obj=[objects objectAtIndex:0];
                                     obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -647,6 +671,8 @@
                                     obj[@"MemberStatus"]=@"InActive";
                                     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                         PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                        [feedquery includeKey:@"UserId"];
+
                                         [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                         [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                         
@@ -696,6 +722,8 @@
                                 PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                 [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                 [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                                [detailsquery includeKey:@"UserId"];
+
                                 [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                     PFObject *obj=[objects objectAtIndex:0];
                                     obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -704,6 +732,8 @@
                                     obj[@"MemberStatus"]=@"InActive";
                                     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                         PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                        [feedquery includeKey:@"UserId"];
+
                                         [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                         [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                         
@@ -743,6 +773,8 @@
                             PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                             [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                             [detailsquery whereKey:@"MemberNo" equalTo:sharedObj.AccountNumber];
+                            [detailsquery includeKey:@"UserId"];
+
                             [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                 PFObject *obj=[objects objectAtIndex:0];
                                 obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -751,6 +783,8 @@
                                 obj[@"MemberStatus"]=@"InActive";
                                 [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                     PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                    [feedquery includeKey:@"UserId"];
+
                                     [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                     [feedquery whereKey:@"MobileNo" equalTo:sharedObj.AccountNumber];
                                     

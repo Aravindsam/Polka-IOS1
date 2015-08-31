@@ -12,7 +12,7 @@
 #import "GroupModalClass.h"
 #import "CreateGroupViewController.h"
 #import "CommentViewController.h"
-#import "NotificationTableViewCell.h"
+
 #import "StarViewController.h"
 #import "Toast+UIView.h"
 #import "InsideGroupViewController.h"
@@ -41,7 +41,6 @@
     thesearchBar.frame=CGRectMake(51, 4.5, 260, 35);
     _headerview.backgroundColor=[Generic colorFromRGBHexString:headerColor];
     _searchView.backgroundColor=[Generic colorFromRGBHexString:headerColor];
-    _notificationView.hidden=YES;
     
     mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
@@ -53,20 +52,14 @@
     tempnearbyArray=[[NSMutableArray alloc]init];
     resultArray=[[NSMutableArray alloc]init];
     
+    
+    _indicationlbl.layer.cornerRadius=4.0;
+    _indicationlbl.clipsToBounds=YES;
     if([self respondsToSelector:@selector(setAutomaticallyAdjustsScrollViewInsets:)])
     {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-    
-//    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-//    [inputDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-//    [inputDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-//    [inputDateFormatter setLocale:[NSLocale systemLocale]];
-//    NSDate *inputDate=[inputDateFormatter dateFromString:@"2015-08-25T13:21:38.721Z"];
-//    
-//    NSString *timestamp = [inputDate stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
-//    
-//    NSLog(@"TIME DIFF %@",timestamp);
+
    
     
     //Customise UiTabbar
@@ -140,29 +133,28 @@
         tabBar.selectedItem = nearbyTabBarItem;
     }
     else{
-        if (sharedObj.NearByGroupArray.count==0) {
+     
             [self.tabview addSubview:postViewController.view];
             self.selectedViewController = postViewController;
             tabBar.selectedItem = mygroupTabBarItem;
-        }
-        else
-        {
-            [self.tabview addSubview:profileViewController.view];
-            self.selectedViewController = profileViewController;
-            tabBar.selectedItem = nearbyTabBarItem;
-        }
+        
     }
-  
+   _indicationlbl.hidden=YES;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(doSomething)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(movetonearby) name:@"MOVETONEARBY" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(shownotification) name:@"NOTIFICATION" object:nil];
 
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(movetoMy) name:@"setdefault" object:nil];
- 
+  
 
+}
+-(void)shownotification
+{
+    _indicationlbl.hidden=NO;
 }
 -(void)CallMyService
 {
@@ -198,6 +190,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    _indicationlbl.hidden=YES;
 
     [sharedObj setNearByViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
     [sharedObj setMyGroupViewFrame:CGRectMake(0, 0, _tabview.frame.size.width,  _tabview.frame.size.height)];
@@ -266,9 +259,7 @@
     }
    }
 - (IBAction)showMenu:(id)sender {
-    if (!_notificationView.hidden) {
-        _notificationView.hidden=YES;
-    }
+   
     [[NSNotificationCenter defaultCenter]postNotificationName:@"UPDATE PROFILE" object:nil];
 
     [self.menuContainerViewController toggleLeftSideMenuCompletion:^{
@@ -281,157 +272,15 @@
 
 - (IBAction)notificationbtnAction:(id)sender {
    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    NotificationViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"NotificationViewController"];
+    [self.navigationController pushViewController:settingsViewController animated:YES];
     
-    if (_notificationView.hidden) {
-        _notificationView.hidden=NO;
-        [sharedObj.NotificationArray removeAllObjects];
-        sharedObj.NotificationArray =[[[NSUserDefaults standardUserDefaults]objectForKey:@"NOTIFICATIONLIST"]mutableCopy];
-        
-        [_notificationtableview reloadData];
-    }
-    else
-     _notificationView.hidden=YES;
    
-   
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 1;
-}
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-   return  sharedObj.NotificationArray.count;
-}
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    
-    NotificationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    cell = [[NotificationTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-    NSDictionary *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
-    [cell.iconimageView setImageURL:[NSURL URLWithString:[temp objectForKey:@"Image"]]];
-    NSString*typenotification =temp[@"Type"];
-    if ([typenotification isEqualToString:@"FlagDelete"])
-    {
-        cell.userInteractionEnabled=NO;
-    }
-    else
-    {  cell.userInteractionEnabled=YES;
-        
-    }
-    cell.contentlabel.text=[temp objectForKey:@"Text"];
-    
-    
-    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-    [inputDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-[inputDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];    [inputDateFormatter setLocale:[NSLocale systemLocale]];
-    NSDate *inputDate=[inputDateFormatter dateFromString:[temp objectForKey:@"Time"]];
-    
-    NSLog(@"TIME %@",[temp objectForKey:@"Time"]);
-    NSLog(@"DATE %@",inputDate);
-    
-    NSString *timestamp = [inputDate stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
-    cell.timelabel.text=timestamp;
-    
-    return cell;
-    
-    
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    NSDictionary *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
-     NSString*typenotification =temp[@"Type"];
-    if ([typenotification isEqualToString:@"Post"]||[typenotification isEqualToString:@"Comment"]||[typenotification isEqualToString:@"Flag"])
-    {
-        
-        PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
-        [query getObjectInBackgroundWithId:temp[@"FeedId"] block:^(PFObject *object, NSError *error) {
-            sharedObj.feedObject=object;
-            PFQuery *group=[PFQuery queryWithClassName:@"Group"];
-            [group getObjectInBackgroundWithId:temp[@"GroupId"] block:^(PFObject *object, NSError *error) {
-                PFFile *groupimg=object[@"GroupPicture"];
-                sharedObj.groupimageurl=groupimg;
-                sharedObj.GroupName=object[@"GroupName"];
-                UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-                CommentViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"CommentViewController"];
-                sharedObj.FeedId=sharedObj.feedObject.objectId;
-                // AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-                [self.navigationController presentViewController:settingsViewController animated:YES completion:nil];
-            }];
-          
-        }];
-       
-       
-    }
-    else if ([typenotification isEqualToString:@"JoinRequestApprove"])
-    {
-       
-        PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
-        [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
-        [myquery getObjectInBackgroundWithId:temp[@"GroupId"] block:^(PFObject *group, NSError *error) {
-     
-        sharedObj.groupType=[group objectForKey:@"GroupType"];
-        sharedObj.GroupId=group.objectId;
-        sharedObj.frommygroup=YES;
-        PFFile *imageFile=[group objectForKey:@"ThumbnailPicture"];
-
-        sharedObj.groupimageurl=imageFile;
-        sharedObj.groupMember=[NSString stringWithFormat:@"%@",[group objectForKey:@"MemberCount"]];
-        sharedObj.groupdescription=[group objectForKey:@"GroupDescription"];
-        sharedObj.GroupName=[group objectForKey:@"GroupName"];
-        sharedObj.secretCode=[group objectForKey:@"SecretCode"];
-        sharedObj.currentGroupAdminArray=[group objectForKey:@"AdminArray"];
-        sharedObj.currentGroupmemberArray=[group objectForKey:@"GroupMembers"];
-            NSDate *estabilshed=group.createdAt;
-            NSDateFormatter *temp=[[NSDateFormatter alloc]init];
-            [temp  setDateFormat:@"MMMM dd, yyyy "];
-           NSString *currentdate1=[temp stringFromDate:estabilshed];
-        sharedObj.currentgroupEstablished=currentdate1;
-        sharedObj.currentgroupAddinfo=[[group objectForKey:@"AdditionalInfoRequired"]boolValue];
-        sharedObj.addinfo=[group objectForKey:@"InfoRequired"];
-        sharedObj.currentgroupOpenEntry=[[group objectForKey:@"JobHours"]intValue];
-        sharedObj.currentgroupradius=[group[@"VisibiltyRadius"]intValue];
-        sharedObj.currentgroupSecret=[group[@"SecretStatus"]boolValue];
-        
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            InsideGroupViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InsideGroupViewController"];
-       // AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-        [self.navigationController pushViewController:settingsViewController animated:YES];
-            
-        }];
-    }
-    else if ([typenotification isEqualToString:@"JoinRequest"])
-    {
-      
-            
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-            InvitationViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InvitationViewController"];
-            sharedObj.GroupId=temp[@"GroupId"];
-            [self.navigationController pushViewController:settingsViewController animated:YES];
-        
-        
-    }
-    else if ([typenotification isEqualToString:@"Invitation"])
-    {
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"CALLINVITES" object:nil];
-       
-    }
-   
-    
-}
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return (_notificationtableview.frame.size.height/6);
 }
 
 - (IBAction)searchbtnAction:(id)sender {
 
-    if (!_notificationView.hidden) {
-        _notificationView.hidden=YES;
-    }
     _searchView.hidden=NO;
     _headerview.hidden=YES;
       [self.thesearchBar becomeFirstResponder];

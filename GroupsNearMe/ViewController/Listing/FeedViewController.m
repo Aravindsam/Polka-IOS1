@@ -690,6 +690,76 @@
     
      return  imageData;
 }
+-(NSData *)compressImage1:(UIImage *)imagedata{
+    NSData *imageData1 = [[NSData alloc] initWithData:UIImageJPEGRepresentation((imagedata), 1.0)];
+    
+    int imageSize = (int)imageData1.length;
+    NSLog(@"SIZE OF IMAGE: %i ", imageSize);
+    float compressionQuality;//50 percent compression
+    
+    if (imageSize < 200000) {
+        compressionQuality=1.0;
+    }
+    else if (imageSize < 500000 && imageSize > 200000)
+    {
+        compressionQuality=0.9;
+    }
+    else if (imageSize < 1000000 && imageSize > 500000)
+    {
+        compressionQuality=0.8;
+    }
+    else if (imageSize < 5000000 && imageSize>2000000)
+    {
+        compressionQuality=0.6;
+    }
+    else if (imageSize < 6000000 && imageSize>5000000)
+    {
+        compressionQuality=0.4;
+        
+    }
+    else if (imageSize>6000000)
+    {
+        compressionQuality=0.3;
+    }
+    else
+    {
+        compressionQuality=0.5;
+    }
+    float actualHeight = imagedata.size.height;
+    float actualWidth = imagedata.size.width;
+    float maxHeight = 300.0;
+    float maxWidth = 500.0;
+    float imgRatio = actualWidth/actualHeight;
+    float maxRatio = maxWidth/maxHeight;
+    
+    
+    if (actualHeight > maxHeight || actualWidth > maxWidth){
+        if(imgRatio < maxRatio){
+            //adjust width according to maxHeight
+            imgRatio = maxHeight / actualHeight;
+            actualWidth = imgRatio * actualWidth;
+            actualHeight = maxHeight;
+        }
+        else if(imgRatio > maxRatio){
+            //adjust height according to maxWidth
+            imgRatio = maxWidth / actualWidth;
+            actualHeight = imgRatio * actualHeight;
+            actualWidth = maxWidth;
+        }
+        else{
+            actualHeight = maxHeight;
+            actualWidth = maxWidth;
+        }
+    }
+    
+    CGRect rect = CGRectMake(0.0, 0.0, actualWidth, actualHeight);
+    UIGraphicsBeginImageContext(rect.size);
+    [imagedata drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return imageData;
+}
 
 -(void)addtextFeed:(NSString*)textPost
 {
@@ -770,7 +840,11 @@
       // [self.view makeToast:@"Posting" duration:4.0 position:@"bottom"];
     
     [SVProgressHUD showWithStatus:@"Posting"];
-    PFFile *imageFile = [PFFile fileWithName:@"Image.jpg" data:imageloadstring];
+    PFFile *imageFile = [PFFile fileWithName:@"Feedimage.jpg" data:imageloadstring];
+    UIImage *image1 = [UIImage imageWithData:imageloadstring];
+    
+    PFFile *imgFile=[PFFile fileWithName:@"thumbfeed.jpg" data:[self compressImage1:image1]];
+    
     UIImage *tempimag=[UIImage imageWithData:imageloadstring];
 //    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
 //        if (!error) {
@@ -792,6 +866,7 @@
             }
             postObject[@"PostText"]=textPost;
             postObject[@"Postimage"]=imageFile;
+            postObject[@"ThumbnailPicture"]=imgFile;
             postObject[@"CommentCount"]=[NSNumber numberWithInt:0];
             postObject[@"PostPoint"]=[NSNumber numberWithInt:100];
             postObject[@"FlagCount"]=[NSNumber numberWithInt:0];

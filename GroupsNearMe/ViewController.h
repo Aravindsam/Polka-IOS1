@@ -14,6 +14,8 @@
 #import "NSDate+HumanizedTime.h"
 #import <QuartzCore/QuartzCore.h>
 #import "AsyncImageView.h"
+#import "NotificationViewController.h"
+
 @interface ViewController : UIViewController<UITabBarDelegate,UISearchBarDelegate,UIGestureRecognizerDelegate> {
     NSArray *viewControllers;
     IBOutlet UITabBar *tabBar;
@@ -45,6 +47,7 @@
 @property (nonatomic, retain) IBOutlet UITabBar *tabBar;
 @property (nonatomic, retain) IBOutlet UITabBarItem *nearbyTabBarItem;
 @property (nonatomic, retain) IBOutlet UITabBarItem *mygroupTabBarItem;
+@property (strong, nonatomic) IBOutlet UILabel *indicationlbl;
 
 - (IBAction)searchbtnAction:(id)sender;
 @property (nonatomic, retain) UIViewController *selectedViewController;
@@ -52,8 +55,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *userbadge;
 - (IBAction)userbadgeBtnAction:(id)sender;
 - (IBAction)notificationbtnAction:(id)sender;
-@property (strong, nonatomic) IBOutlet UIView *notificationView;
-@property (strong, nonatomic) IBOutlet UITableView *notificationtableview;
+
 
 @end
 

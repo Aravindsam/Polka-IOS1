@@ -44,7 +44,8 @@
      [memberquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
      [memberquery whereKey:@"MemberNo" equalTo:memberNo];
      [memberquery whereKey:@"MemberStatus" notEqualTo:@"InActive"];
-     
+        [memberquery includeKey:@"UserId"];
+
      [memberquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
          if (error) {
              NSLog(@"error in geo query!"); // todo why is this ever happening?
@@ -182,6 +183,8 @@
     PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
     [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
     [detailsquery whereKey:@"MemberNo" equalTo:memberNo];
+    [detailsquery includeKey:@"UserId"];
+
     [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
          PFObject *obj=[objects objectAtIndex:0];
         obj[@"GroupAdmin"]=[NSNumber numberWithBool:YES];
@@ -259,6 +262,8 @@
                                  PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                  [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                  [detailsquery whereKey:@"MemberNo" equalTo:memberNo];
+                                 [detailsquery includeKey:@"UserId"];
+
                                  [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                      PFObject *obj=[objects objectAtIndex:0];
                                      obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -267,6 +272,8 @@
                                      obj[@"MemberStatus"]=@"InActive";
                                      [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                          PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                         [feedquery includeKey:@"UserId"];
+
                                          [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                          [feedquery whereKey:@"MobileNo" equalTo:memberNo];
                                          
@@ -323,6 +330,8 @@
                                 PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                                 [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                 [detailsquery whereKey:@"MemberNo" equalTo:memberNo];
+                                [detailsquery includeKey:@"UserId"];
+
                                 [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                                     PFObject *obj=[objects objectAtIndex:0];
                                     obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -331,6 +340,8 @@
                                     obj[@"MemberStatus"]=@"InActive";
                                     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                         PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
+                                        [feedquery includeKey:@"UserId"];
+
                                         [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                                         [feedquery whereKey:@"MobileNo" equalTo:memberNo];
                                         
@@ -378,6 +389,8 @@
                     PFQuery *detailsquery=[PFQuery queryWithClassName:@"MembersDetails"];
                     [detailsquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
                     [detailsquery whereKey:@"MemberNo" equalTo:memberNo];
+                    [detailsquery includeKey:@"UserId"];
+
                     [detailsquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                         PFObject *obj=[objects objectAtIndex:0];
                         obj[@"ExitGroup"]=[NSNumber numberWithBool:YES];
@@ -387,6 +400,8 @@
                         [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                             PFQuery*feedquery=[PFQuery queryWithClassName:@"GroupFeed"];
                             [feedquery whereKey:@"GroupId" equalTo:sharedObj.GroupId];
+                            [feedquery includeKey:@"UserId"];
+
                             [feedquery whereKey:@"MobileNo" equalTo:memberNo];
                             
                             [feedquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {

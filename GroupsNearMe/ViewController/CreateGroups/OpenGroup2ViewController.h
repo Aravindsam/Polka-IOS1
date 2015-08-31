@@ -48,4 +48,6 @@
 @property (strong, nonatomic) IBOutlet MKMapView *mapview;
 - (IBAction)back:(id)sender;
 - (IBAction)createbtnClicked:(id)sender;
+- (UIImage*)imageWithImage:(UIImage*)image
+              scaledToSize:(CGSize)newSize;
 @end

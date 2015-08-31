@@ -384,9 +384,9 @@
     
     
     
-    _backgroundImageView.image=image;
-    [_backgroundImageView loadInBackground];
-    _fullgroupimage.image=image;
+    _backgroundImageView.image=croppedImage;
+   // [_backgroundImageView loadInBackground];
+    _fullgroupimage.image=croppedImage;
     _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
     _backgroundImageView.clipsToBounds = YES;
     [[self navigationController] setNavigationBarHidden:YES animated:YES];
@@ -435,7 +435,7 @@
         
     }
     else{
-    [SVProgressHUD showWithStatus:@"Updating Profile...." maskType:SVProgressHUDMaskTypeBlack];
+  
     if (update) {
         return;
     }
@@ -475,30 +475,26 @@
         
     }
     sharedObj.groupdescription=groupDescription;
-    
+      [SVProgressHUD showWithStatus:@"Updating Profile...." maskType:SVProgressHUDMaskTypeBlack];
     if ([groupName isEqualToString:sharedObj.GroupName]) {
         PFQuery*groupQuery=[PFQuery queryWithClassName:@"Group"];
         [groupQuery whereKey:@"objectId" equalTo:sharedObj.GroupId];
         [groupQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
             NSData* data = UIImageJPEGRepresentation(_backgroundImageView.image, 0.8f);
-            PFFile *imageFile1 = [PFFile fileWithName:@"Group.png" data:data];
+            PFFile *imageFile1 = [PFFile fileWithName:@"Group.jpg" data:data];
+            UIImage *image1 = [UIImage imageWithData:data];
             
-            [imageFile1 saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (!error) {
+         imgFile=[PFFile fileWithName:@"thumbgroup.jpg" data:[self compressImage:image1]];
+           
                     object[@"GroupName"]=sharedObj.GroupName;
                     object[@"GroupDescription"]=sharedObj.groupdescription;
                     object[@"MembershipApproval"]=[NSNumber numberWithBool:sharedObj.MemberApproval];
+            object[@"ThumbnailPicture"]=imgFile;
+
                     object[@"GroupPicture"]=imageFile1;
-                    sharedObj.groupimageurl=imageFile1;
                     sharedObj.currentgroupAccess=sharedObj.MemberApproval;
                     [object saveInBackground];
                     [self CallMyService];
-                }
-                else
-                {
-                    [SVProgressHUD dismiss];
-                }
-            }];
             
             
             
@@ -533,25 +529,22 @@
     [groupQuery whereKey:@"objectId" equalTo:sharedObj.GroupId];
     [groupQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
     NSData* data = UIImageJPEGRepresentation(_backgroundImageView.image, 0.8f);
-    PFFile *imageFile1 = [PFFile fileWithName:@"Group.png" data:data];
+    PFFile *imageFile1 = [PFFile fileWithName:@"Group.jpg" data:data];
     
-    [imageFile1 saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (!error) {
+        UIImage *image1 = [UIImage imageWithData:data];
+        
+      imgFile=[PFFile fileWithName:@"thumbgroup.jpg" data:[self compressImage:image1]];
+        
+        object[@"ThumbnailPicture"]=imgFile;
             object[@"GroupName"]=sharedObj.GroupName;
             object[@"GroupDescription"]=sharedObj.groupdescription;
             object[@"MembershipApproval"]=[NSNumber numberWithBool:sharedObj.MemberApproval];
             object[@"GroupPicture"]=imageFile1;
-            sharedObj.groupimageurl=imageFile1;
+//            sharedObj.groupimageurl=imageFile1;
             sharedObj.currentgroupAccess=sharedObj.MemberApproval;
             [object saveInBackground];
             [self CallMyService];
-        }
-        else
-        {
-            [SVProgressHUD dismiss];
-        }
-    }];
-   
+     
         
         
     }];
@@ -560,10 +553,59 @@
     }];
     }
     }
-
+   
 }
+-(NSData *)compressImage:(UIImage *)imagedata{
+    NSData *imageData1 = [[NSData alloc] initWithData:UIImageJPEGRepresentation((imagedata), 1.0)];
+    
+    int imageSize = (int)imageData1.length;
+    NSLog(@"SIZE OF IMAGE: %i ", imageSize);
+    float compressionQuality;//50 percent compression
+    
+    if (imageSize < 200000) {
+        compressionQuality=1.0;
+    }
+    else if (imageSize < 500000 && imageSize > 200000)
+    {
+        compressionQuality=0.9;
+    }
+    else if (imageSize < 1000000 && imageSize > 500000)
+    {
+        compressionQuality=0.8;
+    }
+    else if (imageSize < 5000000 && imageSize>2000000)
+    {
+        compressionQuality=0.6;
+    }
+    else if (imageSize < 6000000 && imageSize>5000000)
+    {
+        compressionQuality=0.4;
+        
+    }
+    else if (imageSize>6000000)
+    {
+        compressionQuality=0.3;
+    }
+    else
+    {
+        compressionQuality=0.5;
+    }
+    
+    
+    
+    
+    CGRect rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
+    UIGraphicsBeginImageContext(rect.size);
+    [imagedata drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return imageData;
+}
+
 -(void)CallMyService
 {
+     sharedObj.groupimageurl=imgFile;
         [SVProgressHUD showWithStatus:@"Profile updated successfully" maskType:SVProgressHUDMaskTypeBlack];
       update=NO;
     myGroupIdArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];

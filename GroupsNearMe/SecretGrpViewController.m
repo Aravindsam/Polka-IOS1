@@ -419,13 +419,54 @@
 }
 
 
--(UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize{
-    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
-    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+-(NSData *)compressImage1:(UIImage *)imagedata{
+    NSData *imageData1 = [[NSData alloc] initWithData:UIImageJPEGRepresentation((imagedata), 1.0)];
+    
+    int imageSize = (int)imageData1.length;
+    NSLog(@"SIZE OF IMAGE: %i ", imageSize);
+    float compressionQuality;//50 percent compression
+    
+    if (imageSize < 200000) {
+        compressionQuality=1.0;
+    }
+    else if (imageSize < 500000 && imageSize > 200000)
+    {
+        compressionQuality=0.9;
+    }
+    else if (imageSize < 1000000 && imageSize > 500000)
+    {
+        compressionQuality=0.8;
+    }
+    else if (imageSize < 5000000 && imageSize>2000000)
+    {
+        compressionQuality=0.6;
+    }
+    else if (imageSize < 6000000 && imageSize>5000000)
+    {
+        compressionQuality=0.4;
+        
+    }
+    else if (imageSize>6000000)
+    {
+        compressionQuality=0.3;
+    }
+    else
+    {
+        compressionQuality=0.5;
+    }
+    
+    
+    
+    
+    CGRect rect = CGRectMake(0.0, 0.0, 300.0, 300.0);
+    UIGraphicsBeginImageContext(rect.size);
+    [imagedata drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
     UIGraphicsEndImageContext();
-    return newImage;
+    return imageData;
 }
+
 
 - (IBAction)createSecretGroup:(id)sender {
     if (create) {
@@ -491,7 +532,10 @@
             {
                 secretcode=[self randomStringWithLength:5];
                 NSData* data = groupImageData;
-                PFFile *imageFile = [PFFile fileWithName:@"groupImage.png" data:data];
+                PFFile *imageFile = [PFFile fileWithName:@"groupImage.jpg" data:data];
+                UIImage *image1 = [UIImage imageWithData:data];
+                
+                PFFile *imgFile=[PFFile fileWithName:@"thumbgroup.jpg" data:[self compressImage1:image1]];
                 groupimgurl=imageFile;
                 
                         PFObject *testObject = [PFObject objectWithClassName:@"Group"];
@@ -499,6 +543,8 @@
                         testObject[@"CountryName"]=sharedObj.AccountCountry;
                         testObject[@"GroupName"]=sharedObj.GroupName;
                         testObject[@"GroupPicture"]=imageFile;
+                testObject[@"ThumbnailPicture"]=imgFile;
+
                         testObject[@"GroupDescription"]=groupDescription;
                         testObject[@"GroupType"]=@"Secret";
                         testObject[@"GroupLocation"]=point;

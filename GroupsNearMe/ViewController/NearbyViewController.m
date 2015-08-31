@@ -99,10 +99,9 @@
   
  
     
+    _noresultLabel.hidden=YES;
    
    
-   
-    
     
     //Notification Call
     
@@ -129,19 +128,6 @@
         });
     }];
 
-    if (sharedobj.NearByGroupArray.count!=0) {
-        [_nearbyTableview setHidden:NO];
-        [_noresultLabel setHidden:YES];
-        [_tapLabel setHidden:YES];
-        [_nearbyTableview reloadData];
-    }
-    else
-    {
-        [_nearbyTableview setHidden:NO];
-        [_noresultLabel setHidden:NO];
-        [_tapLabel setHidden:NO];
-    }
-    
 
     // Do any additional setup after loading the view.
 }
@@ -250,6 +236,7 @@
     [query whereKey:@"GroupStatus" equalTo:@"Active"];
     [query whereKey:@"objectId" notContainedIn:myGroupIdArray];
     [query orderByDescending:@"updatedAt"];
+    [query setLimit:50];
 
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
@@ -301,36 +288,36 @@
                 [SVProgressHUD dismiss];
                 
                 if (sharedobj.NearByGroupArray.count!=0) {
-                    [_nearbyTableview setHidden:NO];
                     [_noresultLabel setHidden:YES];
                     [_tapLabel setHidden:YES];
-                    [_nearbyTableview reloadData];
+                   
                 }
                 else
                 {
-                    [_nearbyTableview setHidden:NO];
                     [_noresultLabel setHidden:NO];
                     [_tapLabel setHidden:NO];
                 }
-                
+                 [_nearbyTableview reloadData];
+                _nearbyTableview.hidden=NO;
             }
             else
             {
                 [SVProgressHUD dismiss];
                 [sharedobj.NearByGroupArray removeAllObjects];
                 if (sharedobj.NearByGroupArray.count!=0) {
-                    [_nearbyTableview setHidden:NO];
                     [_noresultLabel setHidden:YES];
                     [_tapLabel setHidden:YES];
-                    [_nearbyTableview reloadData];
                 }
                 else
                 {
                     
-                    [_nearbyTableview setHidden:NO];
                     [_noresultLabel setHidden:NO];
                     [_tapLabel setHidden:NO];
                 }
+                [_nearbyTableview reloadData];
+                _nearbyTableview.hidden=NO;
+
+
             }
         }
     }];
@@ -349,6 +336,11 @@
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    
+     if (sharedobj.NearByGroupArray.count==0) {
+         return 1;
+     }
+     else{
     if (sharedobj.search) {
         return [sharedobj.searchNearby count];
         
@@ -356,13 +348,23 @@
     
         return sharedobj.NearByGroupArray.count ;
     }
-    
+     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    
+    if (sharedobj.NearByGroupArray.count==0) {
+        static NSString *CellIdentifier = @"Cell";
+        
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        }
+        [cell.contentView addSubview:_noresultLabel];
+        return cell;
+    }
+    else{
     NearByTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     cell = [[NearByTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
@@ -471,12 +473,14 @@
     cell.joinbtn.titleLabel.font = [UIFont systemFontOfSize:11.0];
     cell.backgroundColor=[UIColor whiteColor];
     return cell;
-    
+    }
     
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+     if (sharedobj.NearByGroupArray.count==0) {
+     }
+     else{
     GroupModalClass *modal ;
     if (sharedobj.search) {
         modal = [sharedobj.searchNearby objectAtIndex:indexPath.row];
@@ -511,11 +515,14 @@
     
     AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
     [delegate.navigationController pushViewController:settingsViewController animated:YES];
-
+     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+     if (sharedobj.NearByGroupArray.count==0) {
+         return 80;
+     }
+    else
     return (_nearbyTableview.frame.size.height/6);
     
 }
@@ -957,6 +964,8 @@
                     invitationArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"GroupInvite"
                                      ];
                     [_nearbyTableview reloadData];
+                    _nearbyTableview.hidden=NO;
+
                     [SVProgressHUD dismiss];
                 
                 }}];
