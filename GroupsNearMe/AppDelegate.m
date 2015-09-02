@@ -146,34 +146,34 @@
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
     [[NSNotificationCenter defaultCenter]postNotificationName:@"NOTIFICATION" object:nil];
-    NSString*typenotification =userInfo[@"Type"];
-    NSDictionary *aps = userInfo[@"aps"];
-    NSMutableArray *notifications=[[NSMutableArray alloc]initWithObjects:nil];
-    notifications=[[[NSUserDefaults standardUserDefaults]objectForKey:@"NOTIFICATIONLIST"]mutableCopy];
-    if (notifications==nil) {
-           notifications=[[NSMutableArray alloc]initWithObjects:nil];
-    }
-    if (typenotification.length==0 || typenotification == nil|| [typenotification isEqual:[NSNull null]]) {
-        
-    }
-    else{
-    if (![typenotification isEqualToString:@"Silent"]) {
-        NSDictionary *notificationdict=[[NSDictionary alloc]initWithObjectsAndKeys:userInfo[@"ImageURL"],@"Image",aps[@"alert"],@"Text",userInfo[@"Time"],@"Time",userInfo[@"FeedId"],@"FeedId",userInfo[@"GroupId"],@"GroupId",typenotification,@"Type", nil];
-        if (notifications.count<20) {
-            [notifications insertObject:notificationdict atIndex:0];
-
-        }
-        else
-        {
-            [notifications removeLastObject];
-            [notifications insertObject:notificationdict atIndex:0];
-           
-        }
-        [[NSUserDefaults standardUserDefaults]setObject:notifications forKey:@"NOTIFICATIONLIST"];
-        
+//    NSString*typenotification =userInfo[@"Type"];
+//    NSDictionary *aps = userInfo[@"aps"];
+//    NSMutableArray *notifications=[[NSMutableArray alloc]initWithObjects:nil];
+//    notifications=[[[NSUserDefaults standardUserDefaults]objectForKey:@"NOTIFICATIONLIST"]mutableCopy];
+//    if (notifications==nil) {
+//           notifications=[[NSMutableArray alloc]initWithObjects:nil];
+//    }
+//    if (typenotification.length==0 || typenotification == nil|| [typenotification isEqual:[NSNull null]]) {
+//        
+//    }
+//    else{
+//    if (![typenotification isEqualToString:@"Silent"]) {
+//        NSDictionary *notificationdict=[[NSDictionary alloc]initWithObjectsAndKeys:userInfo[@"ImageURL"],@"Image",aps[@"alert"],@"Text",userInfo[@"Time"],@"Time",userInfo[@"FeedId"],@"FeedId",userInfo[@"GroupId"],@"GroupId",typenotification,@"Type", nil];
+//        if (notifications.count<20) {
+//            [notifications insertObject:notificationdict atIndex:0];
+//
+//        }
+//        else
+//        {
+//            [notifications removeLastObject];
+//            [notifications insertObject:notificationdict atIndex:0];
+//           
+//        }
+//        [[NSUserDefaults standardUserDefaults]setObject:notifications forKey:@"NOTIFICATIONLIST"];
+    
         [[NSNotificationCenter defaultCenter]postNotificationName:@"reloadNotification" object:nil];
-    }
-    }
+//    }
+//    }
     
     completionHandler(UIBackgroundFetchResultNewData);
 }
@@ -184,6 +184,8 @@
         currentInstallation.badge = 0;
         [currentInstallation saveEventually];
     }
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"reloadNotification" object:nil];
+
 }
 
 

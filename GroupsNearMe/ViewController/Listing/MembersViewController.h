@@ -17,7 +17,7 @@
     BOOL search;
 }
 - (IBAction)back:(id)sender;
-
+@property(nonatomic,assign)int recordCount,pageCount;
 @property (strong, nonatomic) IBOutlet UITableView *membertableView;
 @property (strong, nonatomic) IBOutlet UISearchBar *thesearchbar;
 @end

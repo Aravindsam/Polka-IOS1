@@ -212,13 +212,13 @@
                                     [likeArray removeObject:sharedObj.AccountNumber];
                                     object[@"LikeUserArray"]=likeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                      object[@"FeedupdatedAt"]=[NSDate date];
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                      
                                        
                                    
                                     }];
@@ -229,12 +229,13 @@
                                     object[@"LikeUserArray"]=likeArray;
 
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
                                         [object saveInBackground];
                                       
                                     }];
@@ -272,13 +273,14 @@
                                     object[@"LikeUserArray"]=likeArray;
 
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                       
                                                                                                                  }];
                                     
                                 }
@@ -288,13 +290,14 @@
                                     object[@"LikeUserArray"]=likeArray;
 
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                      
                                      
                                     }];
                                     
@@ -345,13 +348,14 @@
                             [likeArray addObject:sharedObj.AccountNumber];
                             object[@"LikeUserArray"]=likeArray;
                             [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                            object[@"FeedupdatedAt"]=[NSDate date];
+
                             NSIndexPath *row=[NSIndexPath indexPathForRow:index inSection:0];
                             [self.tableView beginUpdates];
                             [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                             [self.tableView endUpdates];
                             [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                object[@"FeedupdatedAt"]=object.updatedAt;
-                                [object saveInBackground];
+                              
                                                                                          }];
                         }
                     }];
@@ -411,13 +415,14 @@
                                     [dislikeArray removeObject:sharedObj.AccountNumber];
                                       object[@"DisLikeUserArray"]=dislikeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index1 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                 
                                                                                                                    }];
 
                                 }
@@ -425,13 +430,14 @@
                                 [dislikeArray addObject:sharedObj.AccountNumber];
                                   object[@"DisLikeUserArray"]=dislikeArray;
                                 [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index1 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                    object[@"FeedupdatedAt"]=object.updatedAt;
-                                    [object saveInBackground];
+                                  
                                   
                                 }];
                                 }
@@ -467,13 +473,14 @@
                                     [dislikeArray addObject:sharedObj.AccountNumber];
                                       object[@"DisLikeUserArray"]=dislikeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index1 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                       
                                       
                                     }];
 
@@ -483,13 +490,14 @@
                                     [dislikeArray removeObject:sharedObj.AccountNumber];
                                       object[@"DisLikeUserArray"]=dislikeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:index1 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                     
                                                                                                                 }];
 
                                     
@@ -540,13 +548,14 @@
                             [dislikeArray addObject:sharedObj.AccountNumber];
                             object[@"DisLikeUserArray"]=dislikeArray;
                             [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                            object[@"FeedupdatedAt"]=[NSDate date];
+
                             NSIndexPath *row=[NSIndexPath indexPathForRow:index1 inSection:0];
                             [self.tableView beginUpdates];
                             [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                             [self.tableView endUpdates];
                             [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                object[@"FeedupdatedAt"]=object.updatedAt;
-                                [object saveInBackground];
+                           
                                                                                        }];
                         }
                     }];
@@ -1117,11 +1126,11 @@
 }
 - (void)objectsDidLoad:(NSError *)error {
     [super objectsDidLoad:error];
-    
+    [SVProgressHUD dismiss];
         if ([sharedObj connected]) {
             
             if (self.objects.count==0) {
-                [SVProgressHUD dismiss];
+               
                 [self callService];
             }
             else
@@ -1756,6 +1765,7 @@
     BOOL internetconnect=[sharedObj connected];
     
     if (internetconnect) {
+         [SVProgressHUD show];
         PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
         query.limit=100;
         [query whereKey:@"GroupId" equalTo:[Generic sharedMySingleton].GroupId];
@@ -1769,18 +1779,20 @@
         [query orderByDescending:@"updatedAt"];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             if (objects.count!=0) {
+                
                      self.noDataButton.hidden = YES;
             [PFObject unpinAllObjectsInBackgroundWithName:sharedObj.GroupId];
             [PFObject pinAllInBackground:objects withName:sharedObj.GroupId block:^(BOOL succeeded, NSError *error) {
                 if (succeeded) {
                     NSLog(@"Pinned OK");
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"TAPPHOTO" object:nil];
-                    [SVProgressHUD show];
+                    
                     [self loadObjects];
 
                     
                 }else{
                     NSLog(@"Erro: %@", error.localizedDescription);
+                    
                 }
             
             }];
@@ -1788,7 +1800,7 @@
             else
             {
                 self.noDataButton.hidden = NO;
-
+                [SVProgressHUD dismiss];
             }
             
         }];
@@ -1802,7 +1814,7 @@
 
 
 - (PFQuery *)queryForTable {
-    [SVProgressHUD show];
+   
     PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
     [query whereKey:@"GroupId" equalTo:[Generic sharedMySingleton].GroupId];
     [query includeKey:@"UserId"];
@@ -1827,9 +1839,10 @@
     }
 
   
-   
-   // [query includeKey:@"UserName"];
     [query orderByDescending:@"updatedAt"];
+
+   // [query includeKey:@"UserName"];
+   
     return query;
 }
 -(void)showComposer:(id)sender
@@ -2398,13 +2411,13 @@
                                                      testObject[@"LikeUserArray"]=[[NSMutableArray alloc]init];
                                                      testObject[@"DisLikeUserArray"]=[[NSMutableArray alloc]init];
                                                      PFObject *pointer = [PFObject objectWithoutDataWithClassName:@"UserDetails" objectId:sharedObj.userId];
-                                                     
+                                                     testObject[@"FeedupdatedAt"]=[NSDate date];
+
                                                      testObject[@"UserId"]=pointer;
                                                      testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
                                                      [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                                          if (succeeded) {
-                                                             testObject[@"FeedupdatedAt"]=testObject.updatedAt;
-                                                             [testObject saveInBackground];
+                                                         
                                                              [[NSUserDefaults standardUserDefaults]setObject:inviteArray forKey:@"GroupInvite"];
                                                              [self callInvitationArray];
                                                          }
@@ -2484,7 +2497,7 @@
                                                      testObject[@"MobileNo"]=feed[@"UserId"][@"MobileNo"];
                                                      testObject[@"PostType"]=@"Member";
                                                      testObject[@"PostText"]=[NSString stringWithFormat:@"%@ - newly joined  this group",feed[@"UserId"][@"UserName"]];
-                                                     
+                                                     testObject[@"FeedupdatedAt"]=[NSDate date];
                                                      testObject[@"CommentCount"]=[NSNumber numberWithInt:0];
                                                      testObject[@"PostPoint"]=[NSNumber numberWithInt:0];
                                                      testObject[@"FlagCount"]=[NSNumber numberWithInt:0];
@@ -2495,8 +2508,6 @@
                                                      testObject[@"FlagArray"]=[[NSMutableArray alloc]init];
                                                      [testObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                                                          if (succeeded) {
-                                                             testObject[@"FeedupdatedAt"]=testObject.updatedAt;
-                                                             [testObject saveInBackground];
                                                              [[NSUserDefaults standardUserDefaults]setObject:inviteArray forKey:@"GroupInvite"];
                                                              [self callInvitationArray];
                                                          }

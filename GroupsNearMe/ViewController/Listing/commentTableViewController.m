@@ -777,33 +777,32 @@
                                 likeArray=object[@"LikeUserArray"];
                                 if ([likeArray containsObject:sharedObj.AccountNumber]) {
                                     [likeArray removeObject:sharedObj.AccountNumber];
+                                    object[@"LikeUserArray"]=likeArray;
+                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
-                                    object[@"LikeUserArray"]=likeArray;
-                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                   
                                     
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
-
-                                        //[self Callrefreshtable];
-                                    }];
+                                                                           }];
                                     
                                 }
                                 else{
                                     [likeArray addObject:sharedObj.AccountNumber];
                                     object[@"LikeUserArray"]=likeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
-
+                                       
                                       //  [self Callrefreshtable];
                                     }];
                                 }
@@ -837,14 +836,15 @@
                                 if ([likeArray containsObject:sharedObj.AccountNumber]) {
                                     [likeArray addObject:sharedObj.AccountNumber];
                                   object[@"LikeUserArray"]=likeArray;
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+ [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
-                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                   
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                    
                                         //[self Callrefreshtable];
                                     }];
                                     
@@ -854,13 +854,13 @@
                                     [likeArray removeObject:sharedObj.AccountNumber];
                                     object[@"LikeUserArray"]=likeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
                                         //[self Callrefreshtable];
                                     }];
                                     
@@ -912,13 +912,14 @@
 
                             object[@"LikeUserArray"]=likeArray;
                             [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                            object[@"FeedupdatedAt"]=[NSDate date];
+
                             NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                             [self.tableView beginUpdates];
                             [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                             [self.tableView endUpdates];
                             [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                object[@"FeedupdatedAt"]=object.updatedAt;
-                                [object saveInBackground];
+                                
                                 //[self Callrefreshtable];
                             }];
                         }
@@ -973,13 +974,14 @@
                                     [dislikeArray removeObject:sharedObj.AccountNumber];
                                     object[@"DisLikeUserArray"]=dislikeArray;
                                     [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                        
                                         //[self Callrefreshtable];
                                     }];
                                     
@@ -987,14 +989,15 @@
                                 else{
                                     [dislikeArray addObject:sharedObj.AccountNumber];
                                     object[@"DisLikeUserArray"]=dislikeArray;
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+ [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
-                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                   
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                       
                                         //[self Callrefreshtable];
                                     }];
                                 }
@@ -1029,14 +1032,15 @@
                                 if ([dislikeArray containsObject:sharedObj.AccountNumber]) {
                                     [dislikeArray addObject:sharedObj.AccountNumber];
                                     object[@"DisLikeUserArray"]=dislikeArray;
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+ [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
-                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                                   
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                    
                                        // [self Callrefreshtable];
                                     }];
                                     
@@ -1045,14 +1049,15 @@
                                 {
                                     [dislikeArray removeObject:sharedObj.AccountNumber];
                                     object[@"DisLikeUserArray"]=dislikeArray;
+                                    object[@"FeedupdatedAt"]=[NSDate date];
+ [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
                                     NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                                     [self.tableView endUpdates];
-                                    [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:50]];
+                                   
                                     [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                        object[@"FeedupdatedAt"]=object.updatedAt;
-                                        [object saveInBackground];
+                                       
                                         //[self Callrefreshtable];
                                     }];
                                     
@@ -1104,14 +1109,15 @@
 
                             [dislikeArray addObject:sharedObj.AccountNumber];
                             object[@"DisLikeUserArray"]=dislikeArray;
+                            object[@"FeedupdatedAt"]=[NSDate date];
+                                [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
                             NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                             [self.tableView beginUpdates];
                             [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                             [self.tableView endUpdates];
-                            [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-50]];
+                        
                             [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                                object[@"FeedupdatedAt"]=object.updatedAt;
-                                [object saveInBackground];
+                              
                                 //[self Callrefreshtable];
                             }];
                         }
@@ -1265,11 +1271,13 @@
                         flagUserArray=object[@"FlagArray"];
                         [flagUserArray addObject:sharedObj.AccountNumber];
                         object[@"FlagArray"]=flagUserArray;
+                         [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-200]];
+                        
                         NSIndexPath *row=[NSIndexPath indexPathForRow:0 inSection:0];
                         [self.tableView beginUpdates];
                         [self.tableView reloadRowsAtIndexPaths:@[row] withRowAnimation:UITableViewRowAnimationNone];
                         [self.tableView endUpdates];
-                        [object incrementKey:@"PostPoint" byAmount:[NSNumber numberWithInt:-200]];
+                       
                         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                             //[self Callrefreshtable];
                         }];

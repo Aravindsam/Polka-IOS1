@@ -234,7 +234,7 @@
 }
 -(void)CallMyService:(BOOL)update
 {
-    _mygroupTableview.hidden=YES;
+   // _mygroupTableview.hidden=YES;
     mygroupIDArray=[[NSUserDefaults standardUserDefaults]objectForKey:@"MyGroup"];
     PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
     [myquery whereKey:@"objectId" containedIn:mygroupIDArray];

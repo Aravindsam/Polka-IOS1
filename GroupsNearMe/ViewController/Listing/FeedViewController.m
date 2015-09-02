@@ -418,8 +418,10 @@
         
         viewcontroller = [[UIViewController alloc]init];
         [viewcontroller.view setBackgroundColor:[UIColor blackColor]];
-    
-    
+        int widthimg=feedimage.size.width;
+        int heightimg=feedimage.size.height;
+        
+        
         
 //        addCaption.placeholder=@"Add caption to the image...";
         
@@ -430,19 +432,20 @@
         [viewcontroller.view  addSubview: self.scrollView];
         
         photoImageView = [[UIImageView alloc] init];
-      
-        if (feedimage.size.height > feedimage.size.width) {
-             photoImageView.frame=CGRectMake(0.0f, 0.0f, self.scrollView.frame.size.width,self.scrollView.frame.size.height-60);
-        }
-        else if (feedimage.size.height == feedimage.size.width)
-        {
-          photoImageView.frame=CGRectMake(0.0f,((self.scrollView.frame.size.height-60)/2) -160, self.scrollView.frame.size.width,320);
-        }
-        else
-        {
-             photoImageView.frame=CGRectMake(0.0f,((self.scrollView.frame.size.height-60)/2) -140, self.scrollView.frame.size.width,280);
-        }
-       
+        double aspectratio=(double)heightimg/widthimg;
+        double difference=aspectratio*(self.scrollView.frame.size.width);
+//        if (feedimage.size.height > feedimage.size.width) {
+             photoImageView.frame=CGRectMake(0.0f,(self.scrollView.frame.size.height-difference)/2, self.scrollView.frame.size.width,difference);
+//        }
+//        else if (feedimage.size.height == feedimage.size.width)
+//        {
+//          photoImageView.frame=CGRectMake(0.0f,((self.scrollView.frame.size.height-60)/2) -160, self.scrollView.frame.size.width,difference);
+//        }
+//        else
+//        {
+//             photoImageView.frame=CGRectMake(0.0f,((self.scrollView.frame.size.height-60)/2) -140, self.scrollView.frame.size.width,difference);
+//        }
+//       
         
         [photoImageView setBackgroundColor:[UIColor clearColor]];
         [photoImageView setImage:feedimage];
@@ -697,34 +700,8 @@
     NSLog(@"SIZE OF IMAGE: %i ", imageSize);
     float compressionQuality;//50 percent compression
     
-    if (imageSize < 200000) {
-        compressionQuality=1.0;
-    }
-    else if (imageSize < 500000 && imageSize > 200000)
-    {
-        compressionQuality=0.9;
-    }
-    else if (imageSize < 1000000 && imageSize > 500000)
-    {
-        compressionQuality=0.8;
-    }
-    else if (imageSize < 5000000 && imageSize>2000000)
-    {
-        compressionQuality=0.6;
-    }
-    else if (imageSize < 6000000 && imageSize>5000000)
-    {
-        compressionQuality=0.4;
-        
-    }
-    else if (imageSize>6000000)
-    {
-        compressionQuality=0.3;
-    }
-    else
-    {
-        compressionQuality=0.5;
-    }
+    compressionQuality=0.5;
+   
     float actualHeight = imagedata.size.height;
     float actualWidth = imagedata.size.width;
     float maxHeight = 300.0;

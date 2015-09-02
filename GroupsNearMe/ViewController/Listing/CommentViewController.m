@@ -220,7 +220,7 @@
                                 object[@"UpdateImage"]=[NSNumber numberWithBool:NO];
                                 object[@"UpdateName"]=[NSNumber numberWithBool:NO];
                                 [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//                                    [[NSNotificationCenter defaultCenter]postNotificationName:@"COMMENTADD" object:nil];
+                                  [[NSNotificationCenter defaultCenter]postNotificationName:@"COMMENTADD" object:nil];
                                 }];
                             }];
                         }];

@@ -124,6 +124,7 @@
 		C652EBBE1B5568C400482E3B /* 3-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C652EBBA1B5568C400482E3B /* 3-667h@2x.png */; };
 		C652EBBF1B5568C400482E3B /* 4-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C652EBBB1B5568C400482E3B /* 4-667h@2x.png */; };
 		C65357321B0F2A7C00412873 /* PrivateInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C65357311B0F2A7C00412873 /* PrivateInviteViewController.m */; };
+		C65552451B95CBFA000F808F /* NotificationModalClass.m in Sources */ = {isa = PBXBuildFile; fileRef = C65552441B95CBFA000F808F /* NotificationModalClass.m */; };
 		C65758CF1B2079B9001D1C18 /* MembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C65758CE1B2079B9001D1C18 /* MembersViewController.m */; };
 		C65DDFD51AF75396004F82B7 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D114661AD64080008E32B1 /* Social.framework */; };
 		C6609BEB1B54E6E500306188 /* new_share.png in Resources */ = {isa = PBXBuildFile; fileRef = C6609BEA1B54E6E500306188 /* new_share.png */; };
@@ -402,6 +403,8 @@
 		C652EBBB1B5568C400482E3B /* 4-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "4-667h@2x.png"; sourceTree = "<group>"; };
 		C65357301B0F2A7C00412873 /* PrivateInviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivateInviteViewController.h; sourceTree = "<group>"; };
 		C65357311B0F2A7C00412873 /* PrivateInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivateInviteViewController.m; sourceTree = "<group>"; };
+		C65552431B95CBFA000F808F /* NotificationModalClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationModalClass.h; sourceTree = "<group>"; };
+		C65552441B95CBFA000F808F /* NotificationModalClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationModalClass.m; sourceTree = "<group>"; };
 		C65758CD1B2079B9001D1C18 /* MembersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MembersViewController.h; sourceTree = "<group>"; };
 		C65758CE1B2079B9001D1C18 /* MembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MembersViewController.m; sourceTree = "<group>"; };
 		C6609BEA1B54E6E500306188 /* new_share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_share.png; sourceTree = "<group>"; };
@@ -1185,6 +1188,8 @@
 				C6B5C03F1AE26B5B00C940F4 /* GroupModalClass.m */,
 				C67C88691B257233009BE3CB /* MemberModalclass.h */,
 				C67C886A1B257233009BE3CB /* MemberModalclass.m */,
+				C65552431B95CBFA000F808F /* NotificationModalClass.h */,
+				C65552441B95CBFA000F808F /* NotificationModalClass.m */,
 				C6D114BA1AD68A97008E32B1 /* Generic.h */,
 				C6D114BB1AD68A97008E32B1 /* Generic.m */,
 				C61397FE1AF11C1400BAA97A /* CustomCell.h */,
@@ -1509,6 +1514,7 @@
 				C680CCAE1B3AB2FE0050914B /* NotificationTableViewCell.m in Sources */,
 				C64EC8CE1B4A85120048D14A /* Toast+UIView.m in Sources */,
 				C6D114271AD63D11008E32B1 /* AppDelegate.m in Sources */,
+				C65552451B95CBFA000F808F /* NotificationModalClass.m in Sources */,
 				C63513A51AEA6CF8002FDE2F /* MFSideMenuShadow.m in Sources */,
 				C6D114991AD67D2F008E32B1 /* CreateGroupViewController.m in Sources */,
 				C620DB841AEFCBC6008DC5BA /* UIImage+AlphaAdditions.m in Sources */,
@@ -1617,7 +1623,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1652,7 +1658,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1675,7 +1681,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1697,7 +1703,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -1718,7 +1724,7 @@
 				INFOPLIST_FILE = GroupsNearMeTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GroupsNearMe.app/GroupsNearMe";
 			};
 			name = Debug;
@@ -1735,7 +1741,7 @@
 				INFOPLIST_FILE = GroupsNearMeTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9e716687-431f-486d-ac90-c171687d4fd7";
+				PROVISIONING_PROFILE = "c2c9efee-18e3-493c-ac4d-08678ae236bc";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GroupsNearMe.app/GroupsNearMe";
 			};
 			name = Release;

@@ -11,6 +11,7 @@
 #import "CommentViewController.h"
 #import "InsideGroupViewController.h"
 #import "InvitationViewController.h"
+#import "NotificationModalClass.h"
 @interface NotificationViewController ()
 
 @end
@@ -20,7 +21,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     sharedObj=[Generic sharedMySingleton];
- 
+    sharedObj.AccountNumber=[[NSUserDefaults standardUserDefaults]objectForKey:@"MobileNo"];
+
+    [self loadNotificationList];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(loadNotificationList) name:@"reloadNotification" object:nil];
     
@@ -31,9 +34,43 @@
 
 -(void)loadNotificationList
 {
-    [sharedObj.NotificationArray removeAllObjects];
-    sharedObj.NotificationArray =[[[NSUserDefaults standardUserDefaults]objectForKey:@"NOTIFICATIONLIST"]mutableCopy];
-    [_notificationtableview reloadData];
+//    [sharedObj.NotificationArray removeAllObjects];
+//    sharedObj.NotificationArray =[[[NSUserDefaults standardUserDefaults]objectForKey:@"NOTIFICATIONLIST"]mutableCopy];
+//    [_notificationtableview reloadData];
+    PFQuery*myquery=[PFQuery queryWithClassName:@"Notifications"];
+    [myquery whereKey:@"PushTo" equalTo:sharedObj.AccountNumber];
+    [myquery setLimit:20];
+    [myquery orderByDescending:@"updatedAt"];
+    [myquery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            NSLog(@"error in geo query!"); // todo why is this ever happening?
+        } else {
+            
+            if(objects.count!=0){
+                 [sharedObj.NotificationArray removeAllObjects];
+                for (PFObject *notify in objects) {
+                    NotificationModalClass *modal =  [[NotificationModalClass alloc]init];
+                    [modal setTime:[notify objectForKey:@"Time"]];
+                    [modal setType:[notify objectForKey:@"Type"]];
+                    [modal setUserImageurl:[notify objectForKey:@"ImageURL"]];
+                    [modal setMessage:[notify objectForKey:@"PushMessage"]];
+                    [modal setGroupId:[notify objectForKey:@"GroupId"]];
+                    [modal setFeedId:[notify objectForKey:@"FeedId"]];
+                    [modal setObjVal:[notify objectForKey:@"Objects"]];
+                    [sharedObj.NotificationArray addObject:modal];
+                    
+
+                }
+                [_notificationtableview reloadData];
+            }
+            else
+            {    [sharedObj.NotificationArray removeAllObjects];
+                [_notificationtableview reloadData];
+                
+            }
+        }
+        }];
+
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -57,9 +94,9 @@
     NotificationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     cell = [[NotificationTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-    NSDictionary *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
-    [cell.iconimageView setImageURL:[NSURL URLWithString:[temp objectForKey:@"Image"]]];
-    NSString*typenotification =temp[@"Type"];
+    NotificationModalClass *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
+    [cell.iconimageView setImageURL:[NSURL URLWithString:temp.userImageurl]];
+    NSString*typenotification =temp.type;
     if ([typenotification isEqualToString:@"FlagDelete"])
     {
         cell.userInteractionEnabled=NO;
@@ -68,16 +105,16 @@
     {  cell.userInteractionEnabled=YES;
         
     }
-    cell.contentlabel.text=[temp objectForKey:@"Text"];
+    cell.contentlabel.text=temp.message;
     
     
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
     [inputDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
     [inputDateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];    [inputDateFormatter setLocale:[NSLocale systemLocale]];
-    NSDate *inputDate=[inputDateFormatter dateFromString:[temp objectForKey:@"Time"]];
+    NSDate *inputDate=temp.time;
     
-    NSLog(@"TIME %@",[temp objectForKey:@"Time"]);
-    NSLog(@"DATE %@",inputDate);
+////    NSLog(@"TIME %@",[temp objectForKey:@"Time"]);
+//    NSLog(@"DATE %@",inputDate);
     
     NSString *timestamp = [inputDate stringWithHumanizedTimeDifference:humanizedType withFullString:YES];
     cell.timelabel.text=timestamp;
@@ -89,19 +126,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSDictionary *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
-    NSString*typenotification =temp[@"Type"];
+    NotificationModalClass *temp=[sharedObj.NotificationArray objectAtIndex:indexPath.row];
+    NSString*typenotification =temp.type;
     if ([typenotification isEqualToString:@"Post"]||[typenotification isEqualToString:@"Comment"]||[typenotification isEqualToString:@"Flag"])
     {
         
-        PFQuery *query = [PFQuery queryWithClassName:@"GroupFeed"];
-         [query includeKey:@"UserId"];
-        [query getObjectInBackgroundWithId:temp[@"FeedId"] block:^(PFObject *object, NSError *error) {
-            sharedObj.feedObject=object;
-             sharedObj.FeedId=sharedObj.feedObject.objectId;
+       
+            sharedObj.feedObject=temp.objVal;
+             sharedObj.FeedId=sharedObj.feedObject[@"objectId"];
             PFQuery *group=[PFQuery queryWithClassName:@"Group"];
             [group fromLocalDatastore];
-            [group getObjectInBackgroundWithId:temp[@"GroupId"] block:^(PFObject *object, NSError *error) {
+            [group getObjectInBackgroundWithId:temp.groupId block:^(PFObject *object, NSError *error) {
                 PFFile *groupimg=object[@"GroupPicture"];
                 sharedObj.groupimageurl=groupimg;
                 sharedObj.GroupName=object[@"GroupName"];
@@ -112,17 +147,14 @@
                 [self.navigationController presentViewController:settingsViewController animated:YES completion:nil];
             }];
             
-        }];
         
         
     }
     else if ([typenotification isEqualToString:@"JoinRequestApprove"])
     {
         
-        PFQuery*myquery=[PFQuery queryWithClassName:@"Group"];
-        [myquery whereKey:@"GroupStatus" equalTo:@"Active"];
-        [myquery getObjectInBackgroundWithId:temp[@"GroupId"] block:^(PFObject *group, NSError *error) {
-            
+       
+          PFObject *group=temp.objVal;
             sharedObj.groupType=[group objectForKey:@"GroupType"];
             sharedObj.GroupId=group.objectId;
             sharedObj.frommygroup=YES;
@@ -151,7 +183,7 @@
             // AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
             [self.navigationController pushViewController:settingsViewController animated:YES];
             
-        }];
+       
     }
     else if ([typenotification isEqualToString:@"JoinRequest"])
     {
@@ -159,7 +191,7 @@
         
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         InvitationViewController *settingsViewController = [storyboard instantiateViewControllerWithIdentifier:@"InvitationViewController"];
-        sharedObj.GroupId=temp[@"GroupId"];
+        sharedObj.GroupId=temp.groupId;
         [self.navigationController pushViewController:settingsViewController animated:YES];
         
         

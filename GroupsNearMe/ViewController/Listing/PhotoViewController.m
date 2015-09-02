@@ -23,7 +23,7 @@
     
        sharedObj.userId=[[NSUserDefaults standardUserDefaults]objectForKey:@"USERID"];
     photoArray=[[NSMutableArray alloc]init];
-    
+    _noresultlabel.hidden=YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(CallPhotoService)
@@ -64,11 +64,11 @@
     [query includeKey:@"UserId"];
 
     [query whereKey:@"GroupId" equalTo:sharedObj.GroupId];
-    [query setLimit:20];
+    [query setLimit:100];
     [query whereKey:@"PostType" equalTo:@"Image"];
     [query whereKey:@"PostStatus" equalTo:@"Active"];
     [query orderByDescending:@"updatedAt"];
-    [query fromLocalDatastore];
+//    [query fromLocalDatastore];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         for (PFObject*imageObject in objects) {
             PFFile *imgfile=imageObject[@"Postimage"];
@@ -127,20 +127,21 @@
     ImageCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"TopsListCell" forIndexPath:indexPath];
     PFObject*photo=[sharedObj.photoObjectArray objectAtIndex:indexPath.item];
     PFFile *imgfile=photo[@"ThumbnailPicture"];
-   
-
+      cell.photoImageView.backgroundColor=[UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1.0];
+//        cell.photoImageView.file=imgfile;
+//           [cell.photoImageView loadInBackground];
     //cell.photoImageView.file=imgfile;
    [imgfile getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
        UIImage*tempimage=[UIImage imageWithData:data];
        cell.photoImageView.image=[self squareAndSmall:tempimage];
        [cell.photoImageView loadInBackground];
-       cell.photoImageView.backgroundColor=[UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1.0];
+    
 
     }];
-   
-    cell.photoImageView.backgroundColor=[UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1.0];
+//
+//    cell.photoImageView.backgroundColor=[UIColor colorWithRed:217.0/255.0 green:217.0/255.0 blue:217.0/255.0 alpha:1.0];
 //   [cell.photoImageView setContentMode:UIViewContentModeCenter];
-//    cell.photoImageView.clipsToBounds=YES;
+ //   cell.photoImageView.clipsToBounds=YES;
     return cell;
     }
 }
